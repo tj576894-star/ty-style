@@ -136,7 +136,7 @@ a {
 ========================================= */
 
 .hero {
-    min-height: 620px;
+    min-height: 650px;
     width: 100%;
     position: relative;
     display: flex;
@@ -144,78 +144,34 @@ a {
     padding: 80px 9%;
     color: #ffffff;
 
-    background:
+    background-color: #252525;
+
+    background-image:
         linear-gradient(
             90deg,
-            rgba(0,0,0,0.82) 0%,
-            rgba(0,0,0,0.55) 45%,
-            rgba(0,0,0,0.08) 100%
+            rgba(20,20,20,0.98) 0%,
+            rgba(20,20,20,0.88) 35%,
+            rgba(20,20,20,0.15) 100%
         ),
-        url("https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=1800&auto=format&fit=crop&q=85");
+        url("https://www.borderlineofficial.com/cdn/shop/files/FronteHoodieBlack-2-min.jpg?v=1764259751&width=3000");
 
-    background-size: cover;
-    background-position: center;
+    background-size: cover, auto 100%;
+    background-position: center, right center;
+    background-repeat: no-repeat, no-repeat;
 }
 
 .hero-content {
-    max-width: 650px;
+    max-width: 600px;
     position: relative;
     z-index: 2;
 }
 
-.hero-tag {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 4px;
-    margin-bottom: 25px;
-    color: #d0d0d0;
-}
-
 .hero h1 {
-    font-size: clamp(48px, 7vw, 88px);
+    font-size: clamp(50px, 7vw, 90px);
     font-weight: 900;
-    line-height: 1.04;
+    line-height: 1.02;
     letter-spacing: -5px;
-    margin-bottom: 22px;
 }
-
-.hero-description {
-    color: #dddddd;
-    font-size: 14px;
-    line-height: 1.8;
-    margin-bottom: 35px;
-}
-
-.hero-content button {
-    background: #ffffff;
-    color: #171717;
-    border: 1px solid #ffffff;
-    padding: 17px 32px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    transition: 0.3s;
-}
-
-.hero-content button:hover {
-    background: transparent;
-    color: #ffffff;
-}
-
-.hero-bottom {
-    position: absolute;
-    bottom: 25px;
-    left: 9%;
-    right: 9%;
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    color: #dddddd;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 2px;
-}
-
 
 /* =========================================
    CATEGORIES
