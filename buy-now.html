@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>TY STYLE - Buy Now</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .buy-page {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .buy-title {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .buy-product {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .buy-product img {
+            width: 220px;
+            height: 270px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .buy-info h2 {
+            margin-bottom: 10px;
+        }
+
+        .buy-price {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .buy-form {
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .buy-form h2 {
+            margin-bottom: 20px;
+        }
+
+        .buy-form input,
+        .buy-form textarea,
+        .buy-form select {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .place-order {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #000;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .place-order:hover {
+            opacity: 0.85;
+        }
+
+        .buy-total {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 700px) {
+
+            .buy-product {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .buy-product img {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="buy-page">
+
+        <h1 class="buy-title">
+            TY STYLE - Buy Now
+        </h1>
+
+        <div id="buy-product"></div>
+
+        <div class="buy-form">
+
+            <h2>
+                Delivery Information
+            </h2>
+
+            <form id="buy-form">
+
+                <input
+                    type="text"
+                    id="buy-name"
+                    placeholder="Full Name"
+                    required
+                >
+
+                <input
+                    type="tel"
+                    id="buy-phone"
+                    placeholder="Phone Number"
+                    required
+                >
+
+                <input
+                    type="text"
+                    id="buy-house"
+                    placeholder="House No"
+                    required
+                >
+
+                <textarea
+                    id="buy-address"
+                    placeholder="Complete Address"
+                    rows="4"
+                    required
+                ></textarea>
+
+                <input
+                    type="text"
+                    id="buy-city"
+                    placeholder="City"
+                    required
+                >
+
+                <select id="buy-province" required>
+
+                    <option value="">
+                        Select Province
+                    </option>
+
+                    <option value="Punjab">
+                        Punjab
+                    </option>
+
+                    <option value="Sindh">
+                        Sindh
+                    </option>
+
+                    <option value="Khyber Pakhtunkhwa">
+                        Khyber Pakhtunkhwa
+                    </option>
+
+                    <option value="Balochistan">
+                        Balochistan
+                    </option>
+
+                    <option value="Islamabad">
+                        Islamabad
+                    </option>
+
+                    <option value="Gilgit Baltistan">
+                        Gilgit Baltistan
+                    </option>
+
+                    <option value="Azad Kashmir">
+                        Azad Kashmir
+                    </option>
+
+                </select>
+
+                <textarea
+                    id="buy-notes"
+                    placeholder="Order Notes (Optional)"
+                    rows="3"
+                ></textarea>
+
+                <div
+                    class="buy-total"
+                    id="buy-total"
+                >
+                    Total: Rs. 0
+                </div>
+
+                <button
+                    type="submit"
+                    class="place-order"
+                >
+                    Place Order
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const productBox =
+            document.getElementById("buy-product");
+
+        const buyData =
+            JSON.parse(
+                localStorage.getItem("tyStyleBuyNow")
+            );
+
+
+        if (!buyData) {
+
+            productBox.innerHTML =
+                "<h2>Product nahi mila.</h2>";
+
+        } else {
+
+            productBox.innerHTML = `
+
+                <div class="buy-product">
+
+                    <img
+                        src="${buyData.image}"
+                        alt="${buyData.name}"
+                    >
+
+                    <div class="buy-info">
+
+                        <h2>
+                            ${buyData.name}
+                        </h2>
+
+                        <p>
+                            Size:
+                            <strong>
+                                ${buyData.size}
+                            </strong>
+                        </p>
+
+                        <p>
+                            Quantity:
+                            <strong>
+                                ${buyData.quantity}
+                            </strong>
+                        </p>
+
+                        <p class="buy-price">
+                            Rs.
+                            ${buyData.price.toLocaleString()}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            `;
+
+            document.getElementById(
+                "buy-total"
+            ).textContent =
+                "Total: Rs. " +
+                buyData.price.toLocaleString();
+
+        }
+
+
+        document
+            .getElementById("buy-form")
+            .addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+                    if (!buyData) {
+
+                        alert(
+                            "Product nahi mila."
+                        );
+
+                        return;
+
+                    }
+
+
+                    const customer = {
+
+                        name:
+                            document.getElementById(
+                                "buy-name"
+                            ).value,
+
+                        phone:
+                            document.getElementById(
+                                "buy-phone"
+                            ).value,
+
+                        houseNo:
+                            document.getElementById(
+                                "buy-house"
+                            ).value,
+
+                        address:
+                            document.getElementById(
+                                "buy-address"
+                            ).value,
+
+                        city:
+                            document.getElementById(
+                                "buy-city"
+                            ).value,
+
+                        province:
+                            document.getElementById(
+                                "buy-province"
+                            ).value,
+
+                        notes:
+                            document.getElementById(
+                                "buy-notes"
+                            ).value
+
+                    };
+
+
+                    const total =
+                        buyData.price;
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                "/api/orders",
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "application/json"
+
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            customer:
+                                                customer,
+
+                                            items:
+                                                [buyData],
+
+                                            total:
+                                                total
+
+                                        })
+
+                                }
+                            );
+
+
+                        const result =
+                            await response.json();
+
+
+                        if (
+                            response.ok &&
+                            result.success
+                        ) {
+
+                            alert(
+                                "Order receive ho gaya!\n\nOrder ID: " +
+                                result.orderId
+                            );
+
+                            localStorage.removeItem(
+                                "tyStyleBuyNow"
+                            );
+
+                            window.location.href =
+                                "index.html";
+
+                        } else {
+
+                            alert(
+                                "Order save nahi ho saka."
+                            );
+
+                        }
+
+                    } catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+                        alert(
+                            "Server se connection nahi ho raha."
+                        );
+
+                    }
+
+                }
+            );
+
+    </script>
+
+</body>
+
+</html>
