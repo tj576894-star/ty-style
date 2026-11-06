@@ -77,6 +77,13 @@ function displayProducts(productList = products) {
                     Add to Cart
                 </button>
 
+                <button
+                    class="buy-now"
+                    onclick="buyNow(${product.id})"
+                >
+                    Buy Now
+                </button>
+
             </div>
         `;
 
@@ -189,6 +196,51 @@ function addToCart(productId) {
     }
 
     updateCart();
+
+}
+
+
+/* BUY NOW */
+
+function buyNow(productId) {
+
+    const product =
+        products.find(
+            item => item.id === productId
+        );
+
+    if (!product) return;
+
+    const size =
+        document.getElementById(
+            `size-${productId}`
+        ).value;
+
+    const buyNowItem = {
+
+        id: product.id,
+
+        name: product.name,
+
+        price: Number(product.price),
+
+        size: size,
+
+        quantity: 1,
+
+        image: product.image
+
+    };
+
+    localStorage.setItem(
+        "tyStyleBuyNow",
+        JSON.stringify(buyNowItem)
+    );
+
+    window.open(
+        "buy-now.html",
+        "_blank"
+    );
 
 }
 
@@ -355,14 +407,12 @@ function updateCheckoutTotal() {
 
     let total = 0;
 
-
     cart.forEach(item => {
 
         total +=
             item.price * item.quantity;
 
     });
-
 
     document.getElementById(
         "checkout-total"
@@ -384,13 +434,9 @@ function escapeHTML(value) {
                 const entities = {
 
                     "&": "&amp;",
-
                     "<": "&lt;",
-
                     ">": "&gt;",
-
                     '"': "&quot;",
-
                     "'": "&#039;"
 
                 };
@@ -499,9 +545,7 @@ function showInvoice(
 
         </div>
 
-
         <hr>
-
 
         <div class="invoice-details">
 
@@ -529,9 +573,7 @@ function showInvoice(
 
         </div>
 
-
         <hr>
-
 
         <div class="invoice-customer">
 
@@ -578,14 +620,11 @@ function showInvoice(
 
         </div>
 
-
         <hr>
-
 
         <h3>
             Order Items
         </h3>
-
 
         <table class="invoice-table">
 
@@ -593,30 +632,15 @@ function showInvoice(
 
                 <tr>
 
-                    <th>
-                        Product
-                    </th>
-
-                    <th>
-                        Size
-                    </th>
-
-                    <th>
-                        Qty
-                    </th>
-
-                    <th>
-                        Price
-                    </th>
-
-                    <th>
-                        Subtotal
-                    </th>
+                    <th>Product</th>
+                    <th>Size</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
 
                 </tr>
 
             </thead>
-
 
             <tbody>
 
@@ -625,7 +649,6 @@ function showInvoice(
             </tbody>
 
         </table>
-
 
         <div class="invoice-total">
 
@@ -637,9 +660,7 @@ function showInvoice(
 
         </div>
 
-
         <hr>
-
 
         <div class="invoice-footer">
 
