@@ -411,8 +411,6 @@ function toggleCart() {
     drawer.classList.toggle("active");
     overlay.classList.toggle("active");
 
-    document.body.classList.toggle("cart-open");
-
 }
 
 
