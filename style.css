@@ -900,3 +900,30 @@ a {
         display: none;
     }
 }
+.cart-drawer {
+    position: fixed !important;
+    top: 0;
+    right: -450px;
+    width: 420px;
+    max-width: 92%;
+    height: 100vh;
+    z-index: 9999;
+    transition: right 0.35s ease;
+}
+
+.cart-drawer.active {
+    right: 0 !important;
+}
+
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.cart-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
