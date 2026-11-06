@@ -1087,3 +1087,37 @@ document
 loadProducts();
 
 updateCart();
+/* OPEN AND CLOSE CART */
+
+function toggleCart() {
+
+    document.getElementById("cart-drawer")
+        .classList.toggle("open");
+
+    document.getElementById("cart-overlay")
+        .classList.toggle("open");
+
+}
+
+
+/* GO TO CHECKOUT */
+
+function goToCheckout() {
+
+    if (cart.length === 0) {
+        alert("Pehle cart mein product add karo.");
+        return;
+    }
+
+    document.getElementById("cart-drawer")
+        .classList.remove("open");
+
+    document.getElementById("cart-overlay")
+        .classList.remove("open");
+
+    document.querySelector(".checkout-section")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
