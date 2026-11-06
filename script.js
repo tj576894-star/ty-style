@@ -1,32 +1,62 @@
+/* =========================================
+   TY STYLE — PREMIUM STORE
+   JAVASCRIPT PART 1
+========================================= */
+
 let products = [];
-
-const productContainer =
-    document.getElementById("product-container");
-
-const cartItems =
-    document.getElementById("cart-items");
-
-const cartTotal =
-    document.getElementById("cart-total");
-
-const cartCount =
-    document.getElementById("cart-count");
-
 let cart = [];
 
+const productContainer = document.getElementById("product-container");
+const cartItems = document.getElementById("cart-items");
+const cartTotal = document.getElementById("cart-total");
+const cartCount = document.getElementById("cart-count");
 
-/* PRODUCTS SHOW */
+
+/* =========================================
+   LOAD PRODUCTS
+========================================= */
+
+async function loadProducts() {
+
+    try {
+
+        const response = await fetch("/api/products");
+
+        if (!response.ok) {
+            throw new Error("Products load nahi huay");
+        }
+
+        products = await response.json();
+
+        displayProducts();
+
+    } catch (error) {
+
+        console.error(error);
+
+        productContainer.innerHTML =
+            "<p>Products load nahi ho sake. Page refresh karein.</p>";
+
+    }
+
+}
+
+
+/* =========================================
+   DISPLAY PRODUCTS
+========================================= */
 
 function displayProducts(productList = products) {
 
     productContainer.innerHTML = "";
 
-    if (productList.length === 0) {
+    if (!productList || productList.length === 0) {
 
         productContainer.innerHTML =
-            "<p>No products found in this category.</p>";
+            "<p>No products found.</p>";
 
         return;
+
     }
 
     productList.forEach(product => {
@@ -35,56 +65,54 @@ function displayProducts(productList = products) {
 
         card.className = "product-card";
 
+        const sizes = Array.isArray(product.sizes)
+            ? product.sizes
+            : [];
+
+        const sizeOptions = sizes.length
+            ? `
+                <select id="size-${product.id}">
+                    <option value="">Select Size</option>
+                    ${sizes.map(size =>
+                        `<option value="${escapeHTML(size)}">${escapeHTML(size)}</option>`
+                    ).join("")}
+                </select>
+            `
+            : "";
+
         card.innerHTML = `
 
             <img
-                src="${product.image}"
-                alt="${product.name}"
+                src="${escapeHTML(product.image || "")}"
+                alt="${escapeHTML(product.name || "TY STYLE product")}"
+                loading="lazy"
+                onerror="this.src='https://placehold.co/700x900?text=TY+STYLE'"
             >
 
             <div class="product-info">
 
                 <p class="category">
-                    ${product.category}
+                    ${escapeHTML(product.category || "")}
                 </p>
 
-                <h3>
-                    ${product.name}
-                </h3>
+                <h3>${escapeHTML(product.name || "Product")}</h3>
 
-                <h4>
-                    Rs. ${Number(product.price).toLocaleString()}
-                </h4>
+                <p class="price">
+                    Rs. ${Number(product.price || 0).toLocaleString("en-PK")}
+                </p>
 
-                <label>
-                    Size:
-                </label>
+                ${sizeOptions}
 
-                <select id="size-${product.id}">
-
-                    ${product.sizes.map(size => `
-                        <option value="${size}">
-                            ${size}
-                        </option>
-                    `).join("")}
-
-                </select>
-
-                <button
-                    class="add-cart"
-                    onclick="addToCart(${product.id})"
-                >
-                    Add to Cart
+                <button onclick="addToCart(${Number(product.id)})">
+                    ADD TO CART
                 </button>
 
-                <button
-                    class="buy-now"
-                    onclick="buyNow(${product.id})"
-                >
-                    Buy Now
+                <button onclick="buyNow(${Number(product.id)})">
+                    BUY NOW
                 </button>
 
             </div>
+
         `;
 
         productContainer.appendChild(card);
@@ -94,84 +122,80 @@ function displayProducts(productList = products) {
 }
 
 
-/* FILTER PRODUCTS */
+/* =========================================
+   FILTER PRODUCTS
+========================================= */
 
 function filterProducts(category) {
 
     if (category === "all") {
 
-        displayProducts(products);
-
-    } else {
-
-        const filteredProducts =
-            products.filter(product =>
-                String(product.category).toLowerCase() ===
-                String(category).toLowerCase()
-            );
-
-        displayProducts(filteredProducts);
-
-    }
-
-    document
-        .querySelector(".products")
-        .scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-}
-
-
-/* LOAD PRODUCTS */
-
-async function loadProducts() {
-
-    try {
-
-        const response =
-            await fetch("/api/products");
-
-        products =
-            await response.json();
-
         displayProducts();
 
-    } catch (error) {
-
-        console.log(
-            "Products load nahi hue:",
-            error
-        );
+        return;
 
     }
+
+    const filteredProducts = products.filter(product =>
+        (product.category || "").toLowerCase() === category.toLowerCase()
+    );
+
+    displayProducts(filteredProducts);
+
+    document.querySelector(".products").scrollIntoView({
+        behavior: "smooth"
+    });
 
 }
 
 
-/* ADD TO CART */
+/* =========================================
+   GET SELECTED SIZE
+========================================= */
+
+function getSelectedSize(product) {
+
+    const sizeBox = document.getElementById(`size-${product.id}`);
+
+    if (!sizeBox) {
+        return "";
+    }
+
+    return sizeBox.value;
+
+}
+
+
+/* =========================================
+   ADD TO CART
+========================================= */
 
 function addToCart(productId) {
 
-    const product =
-        products.find(
-            item => item.id === productId
-        );
+    const product = products.find(item =>
+        Number(item.id) === Number(productId)
+    );
 
-    if (!product) return;
+    if (!product) {
+        alert("Product nahi mila.");
+        return;
+    }
 
-    const size =
-        document.getElementById(
-            `size-${productId}`
-        ).value;
+    if (product.stock === false) {
+        alert("Sorry! Ye product out of stock hai.");
+        return;
+    }
 
-    const existingItem =
-        cart.find(
-            item =>
-                item.id === productId &&
-                item.size === size
-        );
+    const size = getSelectedSize(product);
+
+    if (Array.isArray(product.sizes) && product.sizes.length > 0 && !size) {
+        alert("Please apna size select karein.");
+        return;
+    }
+
+    const existingItem = cart.find(item =>
+        Number(item.id) === Number(productId) && item.size === size
+    );
 
     if (existingItem) {
 
@@ -180,72 +204,87 @@ function addToCart(productId) {
     } else {
 
         cart.push({
-
-            id: product.id,
-
-            name: product.name,
-
-            price: Number(product.price),
-
+            ...product,
             size: size,
-
             quantity: 1
-
         });
 
     }
 
     updateCart();
 
+    alert("Product cart mein add ho gaya!");
+
 }
 
 
-/* BUY NOW */
+/* =========================================
+   BUY NOW
+========================================= */
 
 function buyNow(productId) {
 
-    const product =
-        products.find(
-            item => item.id === productId
-        );
+    const product = products.find(item =>
+        Number(item.id) === Number(productId)
+    );
 
-    if (!product) return;
+    if (!product) {
+        alert("Product nahi mila.");
+        return;
+    }
 
-    const size =
-        document.getElementById(
-            `size-${productId}`
-        ).value;
+    if (product.stock === false) {
+        alert("Sorry! Ye product out of stock hai.");
+        return;
+    }
 
-    const buyNowItem = {
+    const size = getSelectedSize(product);
 
-        id: product.id,
+    if (Array.isArray(product.sizes) && product.sizes.length > 0 && !size) {
+        alert("Please apna size select karein.");
+        return;
+    }
 
-        name: product.name,
-
-        price: Number(product.price),
-
+    const selectedProduct = {
+        ...product,
         size: size,
-
-        quantity: 1,
-
-        image: product.image
-
+        quantity: 1
     };
 
     localStorage.setItem(
         "tyStyleBuyNow",
-        JSON.stringify(buyNowItem)
+        JSON.stringify(selectedProduct)
     );
 
-    window.open(
-        "buy-now.html",
-        "_blank"
-    );
+    window.open("buy-now.html", "_blank");
 
 }
 
 
-/* UPDATE CART */
+/* =========================================
+   SAFE HTML TEXT
+========================================= */
+
+function escapeHTML(value) {
+
+    return String(value ?? "").replace(/[&<>"']/g, character => {
+
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        };
+
+        return entities[character];
+
+    });
+
+}
+/* =========================================
+   UPDATE CART
+========================================= */
 
 function updateCart() {
 
@@ -254,115 +293,70 @@ function updateCart() {
     if (cart.length === 0) {
 
         cartItems.innerHTML =
-            "<p>Your cart is empty.</p>";
+            '<p class="empty-cart">Your cart is currently empty.</p>';
 
-        cartTotal.textContent = "0";
-
-        cartCount.textContent = "0";
-
-        updateCheckoutTotal();
-
-        return;
     }
 
     let total = 0;
-
-    let itemsCount = 0;
-
+    let count = 0;
 
     cart.forEach((item, index) => {
 
-        const itemTotal =
-            item.price * item.quantity;
+        const itemTotal = Number(item.price) * item.quantity;
 
         total += itemTotal;
+        count += item.quantity;
 
-        itemsCount += item.quantity;
+        const div = document.createElement("div");
 
+        div.className = "cart-item";
 
-        const cartItem =
-            document.createElement("div");
+        div.innerHTML = `
 
-        cartItem.className =
-            "cart-item";
-
-
-        cartItem.innerHTML = `
-
-            <div>
-
-                <h3>
-                    ${item.name}
-                </h3>
-
-                <p>
-                    Size: ${item.size}
-                </p>
-
-                <p>
-                    Rs. ${item.price.toLocaleString()}
-                </p>
-
-            </div>
-
-
-            <div class="quantity">
-
-                <button
-                    onclick="decreaseQuantity(${index})"
-                >
-                    -
-                </button>
-
-                <span>
-                    ${item.quantity}
-                </span>
-
-                <button
-                    onclick="increaseQuantity(${index})"
-                >
-                    +
-                </button>
-
-            </div>
-
+            <img
+                src="${escapeHTML(item.image || "")}"
+                alt="${escapeHTML(item.name)}"
+                onerror="this.src='https://placehold.co/150x180?text=TY+STYLE'"
+            >
 
             <div>
 
-                <strong>
-                    Rs. ${itemTotal.toLocaleString()}
-                </strong>
+                <h4>${escapeHTML(item.name)}</h4>
 
-                <button
-                    class="remove"
-                    onclick="removeItem(${index})"
-                >
-                    Remove
-                </button>
+                <p>Rs. ${Number(item.price).toLocaleString("en-PK")}</p>
+
+                ${item.size ? `<p>Size: ${escapeHTML(item.size)}</p>` : ""}
+
+                <p>Quantity: ${item.quantity}</p>
+
+                <button onclick="increaseQuantity(${index})">+</button>
+
+                <button onclick="decreaseQuantity(${index})">−</button>
+
+                <button onclick="removeFromCart(${index})">Remove</button>
 
             </div>
 
         `;
 
-        cartItems.appendChild(cartItem);
+        cartItems.appendChild(div);
 
     });
 
+    cartTotal.textContent = total.toLocaleString("en-PK");
 
-    cartTotal.textContent =
-        total.toLocaleString();
-
-    cartCount.textContent =
-        itemsCount;
-
-    updateCheckoutTotal();
+    cartCount.textContent = count;
 
 }
 
 
-/* INCREASE QUANTITY */
+/* =========================================
+   INCREASE QUANTITY
+========================================= */
 
 function increaseQuantity(index) {
+
+    if (!cart[index]) return;
 
     cart[index].quantity++;
 
@@ -371,15 +365,17 @@ function increaseQuantity(index) {
 }
 
 
-/* DECREASE QUANTITY */
+/* =========================================
+   DECREASE QUANTITY
+========================================= */
 
 function decreaseQuantity(index) {
 
-    if (cart[index].quantity > 1) {
+    if (!cart[index]) return;
 
-        cart[index].quantity--;
+    cart[index].quantity--;
 
-    } else {
+    if (cart[index].quantity <= 0) {
 
         cart.splice(index, 1);
 
@@ -390,9 +386,11 @@ function decreaseQuantity(index) {
 }
 
 
-/* REMOVE ITEM */
+/* =========================================
+   REMOVE FROM CART
+========================================= */
 
-function removeItem(index) {
+function removeFromCart(index) {
 
     cart.splice(index, 1);
 
@@ -401,723 +399,151 @@ function removeItem(index) {
 }
 
 
-/* CHECKOUT TOTAL */
+/* =========================================
+   CART OPEN / CLOSE
+========================================= */
 
-function updateCheckoutTotal() {
+function toggleCart() {
 
-    let total = 0;
+    const drawer = document.getElementById("cart-drawer");
+    const overlay = document.getElementById("cart-overlay");
 
-    cart.forEach(item => {
+    drawer.classList.toggle("active");
+    overlay.classList.toggle("active");
 
-        total +=
-            item.price * item.quantity;
-
-    });
-
-    document.getElementById(
-        "checkout-total"
-    ).textContent =
-        total.toLocaleString();
+    document.body.classList.toggle("cart-open");
 
 }
 
 
-/* HTML SECURITY */
+/* =========================================
+   TRACK ORDER
+========================================= */
 
-function escapeHTML(value) {
+const trackingForm = document.getElementById("tracking-form");
 
-    return String(value ?? "")
-        .replace(
-            /[&<>"']/g,
-            character => {
+if (trackingForm) {
 
-                const entities = {
+    trackingForm.addEventListener("submit", async function(event) {
 
-                    "&": "&amp;",
-                    "<": "&lt;",
-                    ">": "&gt;",
-                    '"': "&quot;",
-                    "'": "&#039;"
+        event.preventDefault();
 
-                };
+        const orderId = document.getElementById("tracking-order-id").value.trim();
 
-                return entities[character];
+        const result = document.getElementById("tracking-result");
 
+        result.innerHTML = "<p>Checking your order...</p>";
+
+        try {
+
+            const response = await fetch("/api/orders");
+
+            if (!response.ok) {
+                throw new Error("Orders load nahi huay");
             }
-        );
 
-}
+            const orders = await response.json();
 
+            const order = orders.find(item =>
+                String(item.id) === orderId ||
+                String(item.orderId) === orderId
+            );
 
-/* GENERATE INVOICE */
+            if (!order) {
 
-function showInvoice(
-    orderId,
-    customer,
-    items,
-    total
-) {
-
-    const invoiceSection =
-        document.getElementById(
-            "invoice-section"
-        );
-
-    const invoiceContent =
-        document.getElementById(
-            "invoice-content"
-        );
-
-
-    if (
-        !invoiceSection ||
-        !invoiceContent
-    ) {
-
-        alert(
-            "Invoice section HTML mein nahi mila."
-        );
-
-        return;
-
-    }
-
-
-    const invoiceDate =
-        new Date().toLocaleString();
-
-
-    const rows =
-        items.map(item => {
-
-            const subtotal =
-                item.price * item.quantity;
-
-
-            return `
-
-                <tr>
-
-                    <td>
-                        ${escapeHTML(item.name)}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(item.size)}
-                    </td>
-
-                    <td>
-                        ${item.quantity}
-                    </td>
-
-                    <td>
-                        Rs.
-                        ${Number(item.price).toLocaleString()}
-                    </td>
-
-                    <td>
-                        Rs.
-                        ${subtotal.toLocaleString()}
-                    </td>
-
-                </tr>
-
-            `;
-
-        }).join("");
-
-
-    invoiceContent.innerHTML = `
-
-        <div class="invoice-header">
-
-            <h1>
-                TY STYLE
-            </h1>
-
-            <h2>
-                Customer Invoice
-            </h2>
-
-            <p>
-                Thank you for shopping with us!
-            </p>
-
-        </div>
-
-        <hr>
-
-        <div class="invoice-details">
-
-            <h3>
-                Invoice Details
-            </h3>
-
-            <p>
-                <strong>
-                    Order ID:
-                </strong>
-
-                ${escapeHTML(orderId)}
-            </p>
-
-            <p>
-
-                <strong>
-                    Date:
-                </strong>
-
-                ${escapeHTML(invoiceDate)}
-
-            </p>
-
-        </div>
-
-        <hr>
-
-        <div class="invoice-customer">
-
-            <h3>
-                Customer Details
-            </h3>
-
-            <p>
-                <strong>Name:</strong>
-                ${escapeHTML(customer.name)}
-            </p>
-
-            <p>
-                <strong>Phone:</strong>
-                ${escapeHTML(customer.phone)}
-            </p>
-
-            <p>
-                <strong>House No:</strong>
-                ${escapeHTML(customer.houseNo)}
-            </p>
-
-            <p>
-                <strong>Address:</strong>
-                ${escapeHTML(customer.address)}
-            </p>
-
-            <p>
-                <strong>City:</strong>
-                ${escapeHTML(customer.city)}
-            </p>
-
-            <p>
-                <strong>Province:</strong>
-                ${escapeHTML(customer.province)}
-            </p>
-
-            <p>
-                <strong>Notes:</strong>
-                ${escapeHTML(
-                    customer.notes || "None"
-                )}
-            </p>
-
-        </div>
-
-        <hr>
-
-        <h3>
-            Order Items
-        </h3>
-
-        <table class="invoice-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>Product</th>
-                    <th>Size</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Subtotal</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                ${rows}
-
-            </tbody>
-
-        </table>
-
-        <div class="invoice-total">
-
-            <h2>
-                Total Amount:
-                Rs.
-                ${Number(total).toLocaleString()}
-            </h2>
-
-        </div>
-
-        <hr>
-
-        <div class="invoice-footer">
-
-            <h3>
-                Thank You!
-            </h3>
-
-            <p>
-                TY STYLE - Online Clothing Store
-            </p>
-
-        </div>
-
-    `;
-
-
-    invoiceSection.style.display =
-        "block";
-
-
-    invoiceSection.scrollIntoView({
-
-        behavior: "smooth",
-
-        block: "start"
-
-    });
-
-}
-
-
-/* PRINT INVOICE */
-
-function printInvoice() {
-
-    window.print();
-
-}
-
-
-/* ORDER CONFIRMED */
-
-function showOrderConfirmed(orderId) {
-
-    const section =
-        document.getElementById(
-            "order-confirmed-section"
-        );
-
-    const orderIdBox =
-        document.getElementById(
-            "confirmed-order-id"
-        );
-
-
-    if (
-        !section ||
-        !orderIdBox
-    ) {
-
-        return;
-
-    }
-
-
-    orderIdBox.textContent =
-        "Order ID: " + orderId;
-
-
-    section.style.display =
-        "block";
-
-
-    section.scrollIntoView({
-
-        behavior: "smooth",
-
-        block: "center"
-
-    });
-
-}
-
-
-/* TRACKING BUTTON */
-
-function goToTracking() {
-
-    const trackingSection =
-        document.querySelector(
-            ".tracking-section"
-        );
-
-
-    if (trackingSection) {
-
-        trackingSection.scrollIntoView({
-
-            behavior: "smooth"
-
-        });
-
-    }
-
-}
-
-
-/* CONTINUE SHOPPING */
-
-function continueShopping() {
-
-    const productsSection =
-        document.querySelector(
-            ".products"
-        );
-
-
-    if (productsSection) {
-
-        productsSection.scrollIntoView({
-
-            behavior: "smooth"
-
-        });
-
-    }
-
-}
-
-
-/* CHECKOUT FORM */
-
-document
-    .getElementById("checkout-form")
-    .addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-
-            if (cart.length === 0) {
-
-                alert(
-                    "Pehle cart mein product add karo."
-                );
+                result.innerHTML =
+                    "<p>Order nahi mila. Apna Order ID check karein.</p>";
 
                 return;
 
             }
 
+            result.innerHTML = `
 
-            const customer = {
+                <h3>Order Found!</h3>
 
-                name:
-                    document.getElementById(
-                        "customer-name"
-                    ).value,
+                <p><strong>Order ID:</strong> ${escapeHTML(order.id || order.orderId)}</p>
 
-                phone:
-                    document.getElementById(
-                        "customer-phone"
-                    ).value,
+                <p><strong>Status:</strong> ${escapeHTML(order.status || "Received")}</p>
 
-                houseNo:
-                    document.getElementById(
-                        "house-no"
-                    ).value,
+                <p><strong>Total:</strong> Rs. ${Number(order.total || 0).toLocaleString("en-PK")}</p>
 
-                address:
-                    document.getElementById(
-                        "customer-address"
-                    ).value,
+            `;
 
-                city:
-                    document.getElementById(
-                        "customer-city"
-                    ).value,
+        } catch (error) {
 
-                province:
-                    document.getElementById(
-                        "customer-province"
-                    ).value,
+            console.error(error);
 
-                notes:
-                    document.getElementById(
-                        "order-notes"
-                    ).value
-
-            };
-
-
-            const orderedItems =
-                cart.map(item => ({
-                    ...item
-                }));
-
-
-            const total =
-                orderedItems.reduce(
-                    (sum, item) => {
-
-                        return sum +
-                            (
-                                item.price *
-                                item.quantity
-                            );
-
-                    },
-                    0
-                );
-
-
-            try {
-
-                const response =
-                    await fetch(
-                        "/api/orders",
-                        {
-
-                            method: "POST",
-
-                            headers: {
-
-                                "Content-Type":
-                                    "application/json"
-
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    customer:
-                                        customer,
-
-                                    items:
-                                        orderedItems,
-
-                                    total:
-                                        total
-
-                                })
-
-                        }
-                    );
-
-
-                const result =
-                    await response.json();
-
-
-                if (
-                    response.ok &&
-                    result.success
-                ) {
-
-                    showOrderConfirmed(
-                        result.orderId
-                    );
-
-
-                    showInvoice(
-
-                        result.orderId,
-
-                        customer,
-
-                        orderedItems,
-
-                        total
-
-                    );
-
-
-                    alert(
-
-                        "Thank you " +
-                        customer.name +
-                        "! Aapka order receive ho gaya hai.\n\nOrder ID: " +
-                        result.orderId
-
-                    );
-
-
-                    cart = [];
-
-
-                    updateCart();
-
-
-                    document
-                        .getElementById(
-                            "checkout-form"
-                        )
-                        .reset();
-
-
-                } else {
-
-                    alert(
-                        "Order save nahi ho saka."
-                    );
-
-                }
-
-
-            } catch (error) {
-
-                console.error(
-                    "Order Error:",
-                    error
-                );
-
-
-                alert(
-                    "Server se connection nahi ho raha."
-                );
-
-            }
+            result.innerHTML =
+                "<p>Tracking abhi available nahi. Dobara try karein.</p>";
 
         }
-    );
 
-
-/* ORDER TRACKING */
-
-document
-    .getElementById("tracking-form")
-    .addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-
-            const orderId =
-                document.getElementById(
-                    "tracking-order-id"
-                ).value.trim();
-
-
-            const phone =
-                document.getElementById(
-                    "tracking-phone"
-                ).value.trim();
-
-
-            const resultBox =
-                document.getElementById(
-                    "tracking-result"
-                );
-
-
-            resultBox.textContent =
-                "Order check ho raha hai...";
-
-
-            try {
-
-                const response =
-                    await fetch(
-
-                        `/api/orders/${encodeURIComponent(orderId)}?phone=${encodeURIComponent(phone)}`
-
-                    );
-
-
-                const result =
-                    await response.json();
-
-
-                if (
-                    response.ok &&
-                    result.success
-                ) {
-
-                    resultBox.innerHTML = `
-
-                        <h3>
-                            Order Found!
-                        </h3>
-
-                        <p>
-                            Order ID:
-                            ${escapeHTML(result.orderId)}
-                        </p>
-
-                        <p>
-                            Order Status:
-                            <strong>
-                                ${escapeHTML(result.status)}
-                            </strong>
-                        </p>
-
-                    `;
-
-                } else {
-
-                    resultBox.textContent =
-                        "Order nahi mila. Order ID aur Phone Number check karo.";
-
-                }
-
-
-            } catch (error) {
-
-                console.error(
-                    "Tracking Error:",
-                    error
-                );
-
-
-                resultBox.textContent =
-                    "Server se connection nahi ho raha.";
-
-            }
-
-        }
-    );
-
-
-/* START */
-
-loadProducts();
-
-updateCart();
-/* OPEN AND CLOSE CART */
-
-function toggleCart() {
-
-    document.getElementById("cart-drawer")
-        .classList.toggle("open");
-
-    document.getElementById("cart-overlay")
-        .classList.toggle("open");
+    });
 
 }
 
 
-/* GO TO CHECKOUT */
+/* =========================================
+   INVOICE
+========================================= */
 
-function goToCheckout() {
+function showInvoice(order) {
 
-    if (cart.length === 0) {
-        alert("Pehle cart mein product add karo.");
-        return;
-    }
+    const invoiceSection = document.getElementById("invoice-section");
+    const invoiceContent = document.getElementById("invoice-content");
 
-    document.getElementById("cart-drawer")
-        .classList.remove("open");
+    if (!invoiceSection || !invoiceContent) return;
 
-    document.getElementById("cart-overlay")
-        .classList.remove("open");
+    invoiceContent.innerHTML = `
 
-    document.querySelector(".checkout-section")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
+        <h3>TY STYLE</h3>
+
+        <p>Order ID: ${escapeHTML(order.id || order.orderId || "")}</p>
+
+        <p>Customer: ${escapeHTML(order.name || "")}</p>
+
+        <p>Phone: ${escapeHTML(order.phone || "")}</p>
+
+        <p>Address: ${escapeHTML(order.address || "")}</p>
+
+        <hr>
+
+        <p>Total: Rs. ${Number(order.total || 0).toLocaleString("en-PK")}</p>
+
+    `;
+
+    invoiceSection.classList.add("show");
 
 }
+
+
+/* =========================================
+   ORDER CONFIRMATION
+========================================= */
+
+function showOrderConfirmation(order) {
+
+    const section = document.getElementById("order-confirmed-section");
+    const orderId = document.getElementById("confirmed-order-id");
+
+    if (!section || !orderId) return;
+
+    orderId.textContent = order.id || order.orderId || "";
+
+    section.classList.add("show");
+
+}
+
+
+/* =========================================
+   START WEBSITE
+========================================= */
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    loadProducts();
+
+    updateCart();
+
+});
