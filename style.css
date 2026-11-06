@@ -751,3 +751,29 @@ footer p {
         height: 250px;
     }
 }
+/* BUY NOW BUTTON */
+
+.buy-now {
+    width: 100%;
+    padding: 13px;
+    margin-top: 10px;
+    background: #d4a017;
+    color: #000;
+    border: 2px solid #d4a017;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.buy-now:hover {
+    background: #000;
+    color: #d4a017;
+    border-color: #000;
+}
+
+.add-cart {
+    width: 100%;
+    margin-top: 10px;
+}
