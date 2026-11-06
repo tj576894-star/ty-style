@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TY Style - Online Clothing Store</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        .tracking-section {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .tracking-section h2 {
+            margin-bottom: 15px;
+        }
+
+        .tracking-section input {
+            width: 100%;
+            padding: 13px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+        }
+
+        .tracking-section button {
+            padding: 13px 20px;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        #tracking-result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+
+        /* ORDER CONFIRMED */
+
+        #order-confirmed-section {
+            display: none;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 40px 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.10);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        #order-confirmed-section h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        #confirmed-order-id {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .confirmed-status {
+            display: inline-block;
+            padding: 8px 18px;
+            background: #eee;
+            border-radius: 20px;
+            margin: 10px 0 25px;
+            font-weight: bold;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .confirmation-buttons button {
+            padding: 13px 22px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            background: #111;
+            color: white;
+        }
+
+
+        /* INVOICE */
+
+        #invoice-section {
+            display: none;
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+        }
+
+        #invoice-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .invoice-details p {
+            margin: 9px 0;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .invoice-table th {
+            background: #111;
+            color: white;
+        }
+
+        .invoice-total {
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .print-btn {
+            display: block;
+            margin: 25px auto 0;
+            padding: 13px 22px;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+
+        /* PRINT */
+
+        @media print {
+
+            body * {
+                visibility: hidden;
+            }
+
+            #invoice-section,
+            #invoice-section * {
+                visibility: visible;
+            }
+
+            #invoice-section {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                border: none;
+                box-shadow: none;
+            }
+
+            .print-btn {
+                display: none;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="logo">
+            TY STYLE
+        </div>
+
+
+        <nav>
+
+            <a href="#" onclick="filterProducts('all')">
+                Home
+            </a>
+
+            <a href="#" onclick="filterProducts('Hoodies')">
+                Hoodies
+            </a>
+
+            <a href="#" onclick="filterProducts('Shirts')">
+                Shirts
+            </a>
+
+            <a href="#" onclick="filterProducts('Pants')">
+                Pants
+            </a>
+
+            <a href="#" onclick="filterProducts('Sweatshirts')">
+                Sweatshirts
+            </a>
+
+        </nav>
+
+
+        <div class="cart">
+
+            🛒 Cart
+            <span id="cart-count">0</span>
+
+        </div>
+
+    </header>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <h1>Upgrade Your Style</h1>
+
+            <p>
+                Premium Hoodies, Shirts, Pants & Sweatshirts
+            </p>
+
+            <button>
+                Shop Now
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+
+    <section class="categories">
+
+        <h2>Shop By Category</h2>
+
+
+        <div class="category-container">
+
+
+            <div
+                class="category"
+                onclick="filterProducts('Hoodies')"
+            >
+
+                <h3>Hoodies</h3>
+
+                <p>Latest Hoodies</p>
+
+            </div>
+
+
+            <div
+                class="category"
+                onclick="filterProducts('Shirts')"
+            >
+
+                <h3>Shirts</h3>
+
+                <p>Stylish Shirts</p>
+
+            </div>
+
+
+            <div
+                class="category"
+                onclick="filterProducts('Pants')"
+            >
+
+                <h3>Pants</h3>
+
+                <p>Comfortable Pants</p>
+
+            </div>
+
+
+            <div
+                class="category"
+                onclick="filterProducts('Sweatshirts')"
+            >
+
+                <h3>Sweatshirts</h3>
+
+                <p>New Collection</p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- PRODUCTS -->
+
+    <section class="products">
+
+        <h2>Featured Products</h2>
+
+        <div id="product-container"></div>
+
+    </section>
+
+
+    <!-- CART -->
+
+    <section class="cart-section">
+
+        <h2>Your Cart</h2>
+
+
+        <div id="cart-items">
+
+            <p>
+                Your cart is empty.
+            </p>
+
+        </div>
+
+
+        <div class="cart-total">
+
+            <h3>
+
+                Total:
+                Rs.
+                <span id="cart-total">0</span>
+
+            </h3>
+
+
+            <button id="checkout-button">
+
+                Proceed to Checkout
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- CHECKOUT -->
+
+    <section class="checkout-section">
+
+        <h2>Checkout</h2>
+
+
+        <form id="checkout-form">
+
+
+            <div class="form-group">
+
+                <label>
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="customer-name"
+                    placeholder="Enter your name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="customer-phone"
+                    placeholder="03XXXXXXXXX"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    House No
+                </label>
+
+                <input
+                    type="text"
+                    id="house-no"
+                    placeholder="House No"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Full Address
+                </label>
+
+                <textarea
+                    id="customer-address"
+                    placeholder="Street, Area, Town..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    City
+                </label>
+
+                <select
+                    id="customer-city"
+                    required
+                >
+
+                    <option value="">
+                        Select City
+                    </option>
+
+                    <option value="Lahore">
+                        Lahore
+                    </option>
+
+                    <option value="Islamabad">
+                        Islamabad
+                    </option>
+
+                    <option value="Rawalpindi">
+                        Rawalpindi
+                    </option>
+
+                    <option value="Karachi">
+                        Karachi
+                    </option>
+
+                    <option value="Faisalabad">
+                        Faisalabad
+                    </option>
+
+                    <option value="Multan">
+                        Multan
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Province
+                </label>
+
+                <select
+                    id="customer-province"
+                    required
+                >
+
+                    <option value="">
+                        Select Province
+                    </option>
+
+                    <option value="Punjab">
+                        Punjab
+                    </option>
+
+                    <option value="Sindh">
+                        Sindh
+                    </option>
+
+                    <option value="KPK">
+                        Khyber Pakhtunkhwa
+                    </option>
+
+                    <option value="Balochistan">
+                        Balochistan
+                    </option>
+
+                    <option value="Islamabad">
+                        Islamabad Capital Territory
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Order Notes
+                </label>
+
+                <textarea
+                    id="order-notes"
+                    placeholder="Any special instructions..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="checkout-summary">
+
+                <h3>
+
+                    Order Total:
+                    Rs.
+                    <span id="checkout-total">0</span>
+
+                </h3>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="place-order"
+            >
+
+                Place Order
+
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- ORDER CONFIRMED -->
+
+    <section id="order-confirmed-section">
+
+        <div class="success-icon">
+            ✅
+        </div>
+
+
+        <h2>
+            Order Confirmed!
+        </h2>
+
+
+        <p>
+            Thank you for shopping with TY STYLE.
+        </p>
+
+
+        <p id="confirmed-order-id">
+            Order ID: -
+        </p>
+
+
+        <div class="confirmed-status">
+            Status: Pending
+        </div>
+
+
+        <p>
+            Aapka order successfully receive ho gaya hai.
+        </p>
+
+
+        <div class="confirmation-buttons">
+
+
+            <button onclick="goToTracking()">
+
+                Track Your Order
+
+            </button>
+
+
+            <button onclick="continueShopping()">
+
+                Continue Shopping
+
+            </button>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- INVOICE -->
+
+    <section id="invoice-section">
+
+        <div class="invoice-header">
+
+            <h1>
+                TY STYLE
+            </h1>
+
+            <p>
+                Online Clothing Store
+            </p>
+
+            <h2>
+                ORDER INVOICE
+            </h2>
+
+        </div>
+
+
+        <div id="invoice-content"></div>
+
+
+        <button
+            class="print-btn"
+            onclick="window.print()"
+        >
+
+            Print Invoice / Save PDF
+
+        </button>
+
+    </section>
+
+
+    <!-- TRACK ORDER -->
+
+    <section class="tracking-section">
+
+        <h2>
+            Track Your Order
+        </h2>
+
+
+        <p>
+            Enter your Order ID and Phone Number.
+        </p>
+
+
+        <form id="tracking-form">
+
+
+            <input
+                type="text"
+                id="tracking-order-id"
+                placeholder="Enter Order ID"
+                required
+            >
+
+
+            <input
+                type="tel"
+                id="tracking-phone"
+                placeholder="Enter Phone Number"
+                required
+            >
+
+
+            <button type="submit">
+                Track Order
+            </button>
+
+        </form>
+
+
+        <div id="tracking-result"></div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <h3>
+            TY STYLE
+        </h3>
+
+
+        <p>
+            Online Clothing Store
+        </p>
+
+
+        <p>
+            © 2026 TY Style. All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>

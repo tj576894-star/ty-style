@@ -1,0 +1,49 @@
+[
+  {
+    "id": 1793898250838,
+    "name": "Premium hoodie ",
+    "price": 500,
+    "category": "Hoodies",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "stock": true
+  },
+  {
+    "id": 1793898356444,
+    "name": "Flure hoodie",
+    "price": 3600,
+    "category": "Hoodies",
+    "sizes": [
+      "M"
+    ],
+    "stock": true
+  },
+  {
+    "id": 1793898940154,
+    "name": "Tayyab pent ",
+    "price": 5400,
+    "category": "Pants",
+    "sizes": [
+      "L"
+    ],
+    "stock": true
+  },
+  {
+    "id": 1793901103064,
+    "name": "Test hoodie",
+    "price": 2500,
+    "category": "Hoodies",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "image": "https://images.unsplash.com/photo-1556821840-3a63f95609a7",
+    "stock": true
+  }
+]
