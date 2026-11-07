@@ -724,525 +724,821 @@
         <p>PREMIUM STREETWEAR · STYLE YOUR WAY</p>
     </footer>
 
-    <script>
-        let allProducts = [];
-        let currentProduct = null;
-        let selectedSize = "";
-        let quantity = 1;
-
-        const params = new URLSearchParams(window.location.search);
-        const productId = Number(params.get("id"));
-
-        function safeText(value) {
-            return String(value ?? "").replace(/[&<>"']/g, char => ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;"
-            })[char]);
-        }
-
-        function money(value) {
-            return Number(value || 0).toLocaleString("en-PK");
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById("toast");
-            toast.textContent = message;
-            toast.classList.add("show");
-
-            setTimeout(() => {
-                toast.classList.remove("show");
-            }, 2500);
-        }
-
-        async function loadProduct() {
-            try {
-                const response = await fetch("/api/products");
-
-                if (!response.ok) {
-                    throw new Error("Products load nahi huay");
-                }
-
-                allProducts = await response.json();
-
-                currentProduct = allProducts.find(product =>
-                    Number(product.id) === productId
-                );
-
-                if (!currentProduct) {
-                    document.getElementById("product-details").innerHTML =
-                        "<h2 style='padding:80px;text-align:center'>Product not found!</h2>";
-                    return;
-                }
-
-                document.title = currentProduct.name + " | TY STYLE";
-
-                quantity = 1;
-                selectedSize = "";
-
-                renderProduct();
-
-            } catch (error) {
-                console.error(error);
-
-                document.getElementById("product-details").innerHTML =
-                    "<p style='padding:80px;text-align:center'>Unable to load product. Please refresh.</p>";
-            }
-        }
-
-        function renderProduct() {
-            const p = currentProduct;
-
-            const sizes = Array.isArray(p.sizes) && p.sizes.length
-                ? p.sizes
-                : ["S", "M", "L", "XL", "XXL"];
-
-            const salePrice = Number(p.price || 0);
-            const regularPrice = Math.round(salePrice * 1.5);
-            const saving = regularPrice - salePrice;
-            const discount = regularPrice > 0
-                ? Math.round((saving / regularPrice) * 100)
-                : 0;
-
-            const available = p.stock !== false;
-
-            const demoReviews = [
-                ["Faizan S.", "Omg got my parcel its look stunning! Korean style love it 🔥"],
-                ["Nabeel A.", "Quality bohat achi hai. Size fitting bhi perfect hai."],
-                ["Moeez A.", "Finally mil gaya jo design dhoond raha tha. Amazing!"],
-                ["Usama B.", "Your designs never failed me. Absolutely in love with it."],
-                ["Uneeb K.", "Fantastic style and quality. Satisfied! 👏"],
-                ["Shamraiz", "Bohat zabardast design hai. Love it!"],
-                ["Furqan R.", "Great quality material, style and stitching."],
-                ["Aliyaan C.", "Finally got it on sale. So stylish!"],
-                ["Sheroz A.", "Satisfied with my shopping. Thanks!"],
-                ["Mubeen A.", "Bohat achi quality aur fitting hai 😍"],
-                ["Fozan R.", "Unique design hai, pehn kar bohat achi lagi."],
-                ["Saqib Z.", "Looks stylish. Quality bhi excellent hai."],
-                ["Sameer J.", "Always find great quality stuff here."],
-                ["Abdul M.", "Sab kuch amazing hai: fitting, size aur quality 👍"]
-            ];
-
-            document.getElementById("product-details").innerHTML = `
-
-                <section class="product-main">
-
-                    <div class="gallery">
-                        <div class="main-image-box">
-
-                            <span class="sale-label">SALE · ${discount}% OFF</span>
-
-                            <img
-                                class="main-image"
-                                src="${safeText(p.image || "")}"
-                                alt="${safeText(p.name)}"
-                                onerror="this.src='https://placehold.co/700x900?text=TY+STYLE'"
-                            >
-
-                        </div>
-
-                        <div class="gallery-caption">
-                            <span>TY STYLE COLLECTION</span>
-                            <span>PREMIUM STREETWEAR</span>
-                        </div>
-                    </div>
-
-                    <div class="product-info">
-
-                        <p class="product-category">
-                            ${safeText(p.category || "TY STYLE COLLECTION")}
-                        </p>
-
-                        <h1 class="product-title">
-                            ${safeText(p.name)}
-                        </h1>
-
-                        <a href="#customer-reviews" class="review-link">
-                            <span class="stars">★★★★★</span>
-                            14 Reviews
-                        </a>
-
-                        <div class="price-area">
-
-                            <p class="regular-label">Regular price</p>
-
-                            <div class="price-row">
-                                <span class="sale-price">
-                                    Rs.${money(salePrice)}
-                                </span>
-
-                                <span class="old-price">
-                                    Rs.${money(regularPrice)}
-                                </span>
-
-                                <span class="discount">
-                                    ${discount}% OFF
-                                </span>
-                            </div>
-
-                            <p class="saving">
-                                Save Rs.${money(saving)}
-                            </p>
-
-                            <p class="availability">
-                                <span style="background:${available ? '#222' : '#999'}"></span>
-                                ${available ? "Available" : "Unavailable"}
-                            </p>
-
-                        </div>
-
-                        <div class="option-heading">
-                            <strong>Size:</strong>
-                            <a href="#size-guide" class="size-guide">Size Guide</a>
-                        </div>
-
-                        <div class="size-options">
-                            ${sizes.map(size => `
-                                <button
-                                    class="size-box"
-                                    onclick="selectSize(this, '${safeText(size)}')"
-                                >
-                                    ${safeText(size)}
-                                </button>
-                            `).join("")}
-                        </div>
-
-                        <div class="quantity-area">
-
-                            <strong>Quantity</strong>
-
-                            <div class="quantity-control">
-                                <button onclick="changeQuantity(-1)">−</button>
-                                <span id="quantity-value">1</span>
-                                <button onclick="changeQuantity(1)">+</button>
-                            </div>
-
-                            <p id="quantity-total" style="margin-top:15px;font-size:14px;font-weight:800;">
-                                Total: Rs.${money(salePrice)}
-                            </p>
-
-                            <div class="action-buttons">
-
-                                <button
-                                    class="buy-button"
-                                    onclick="buyProduct()"
-                                    ${available ? "" : "disabled"}
-                                >
-                                    BUY IT NOW
-                                </button>
-
-                                <button
-                                    class="cart-button"
-                                    onclick="addProductToCart()"
-                                    ${available ? "" : "disabled"}
-                                >
-                                    ADD TO CART
-                                </button>
-
-                            </div>
-
-                            <button class="enquiry-button" onclick="sendEnquiry()">
-                                PRODUCT ENQUIRY
-                            </button>
-
-                            <div class="trust-info">
-
-                                <div class="trust-item">
-                                    <strong>QUALITY FIRST</strong>
-                                    Carefully selected fashion essentials.
-                                </div>
-
-                                <div class="trust-item">
-                                    <strong>SECURE ORDER</strong>
-                                    Easy ordering through TY STYLE.
-                                </div>
-
-                                <div class="trust-item">
-                                    <strong>SIZE OPTIONS</strong>
-                                    Multiple sizes available.
-                                </div>
-
-                                <div class="trust-item">
-                                    <strong>STREETWEAR STYLE</strong>
-                                    Upgrade your everyday look.
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-                <section class="description-section">
-
-                    <p class="product-category">DETAILS THAT MATTER</p>
-
-                    <h2 class="section-heading">PRODUCT DESCRIPTION</h2>
-
-                    <p class="description-text">
-                        Upgrade your everyday look with this
-                        ${safeText(p.name)} from TY STYLE.
-                        Designed for a stylish and comfortable
-                        everyday outfit. Pair it with your favourite
-                        jeans, trousers or other streetwear essentials.
-                    </p>
-
-                    <div class="description-grid">
-
-                        <div class="description-card">
-                            <strong>FABRIC & QUALITY</strong>
-                            <p>Comfortable fabric with a stylish finish and everyday wear feel.</p>
-                        </div>
-
-                        <div class="description-card">
-                            <strong>FIT & STYLE</strong>
-                            <p>Modern streetwear look designed to complement your wardrobe.</p>
-                        </div>
-
-                        <div class="description-card">
-                            <strong>WASH CARE</strong>
-                            <p>Follow the wash care label. Prefer gentle washing for better fabric life.</p>
-                        </div>
-
-                        <div class="description-card">
-                            <strong>COMFORT</strong>
-                            <p>Made for easy styling and comfortable everyday use.</p>
-                        </div>
-
-                        <div class="description-card">
-                            <strong>SIZE</strong>
-                            <p>Choose your preferred size before placing your order.</p>
-                        </div>
-
-                        <div class="description-card" id="size-guide">
-                            <strong>COLOUR NOTE</strong>
-                            <p>Actual product colour may vary slightly due to lighting and screen settings.</p>
-                        </div>
-
-                    </div>
-
-                </section>
-
-                <section class="related-section">
-
-                    <div class="related-heading">
-                        <p>COMPLETE YOUR LOOK</p>
-                        <h2>RELATED PRODUCTS</h2>
-                    </div>
-
-                    <div class="related-grid" id="related-grid"></div>
-
-                </section>
-
-                <section class="reviews-section" id="customer-reviews">
-
-                    <p class="product-category">CUSTOMER FEEDBACK</p>
-
-                    <h2 class="section-heading">Customer Reviews</h2>
-
-                    <div class="reviews-top">
-
-                        <div class="rating-summary">
-
-                            <div class="rating-number">5.0</div>
-
-                            <div>
-                                <div class="stars">★★★★★</div>
-                                <p>14 reviews</p>
-                            </div>
-
-                        </div>
-
-                        <button
-                            class="write-review"
-                            onclick="writeReview()"
-                        >
-                            WRITE A REVIEW
-                        </button>
-
-                    </div>
-
-                    <div class="rating-bars">
-
-                        ${[5,4,3,2,1].map(star => `
-                            <div class="rating-bar">
-                                <span>${star} Star</span>
-                                <div class="bar-bg">
-                                    <div
-                                        class="bar-fill"
-                                        style="width:${star === 5 ? 100 : 0}%"
-                                    ></div>
-                                </div>
-                                <span>${star === 5 ? 14 : 0}</span>
-                            </div>
-                        `).join("")}
-
-                    </div>
-
-                    <div class="review-list">
-
-                        ${demoReviews.map(review => `
-                            <article class="review-card">
-                                <div class="stars">★★★★★</div>
-                                <h4>${safeText(review[0])}</h4>
-                                <p>${safeText(review[1])}</p>
-                            </article>
-                        `).join("")}
-
-                    </div>
-
-                    <p class="demo-note">
-                        * Demo reviews and ratings are sample content for website design.
-                    </p>
-
-                </section>
-
-            `;
-
-            renderRelatedProducts();
-        }
-
-        function selectSize(button, size) {
-            document.querySelectorAll(".size-box").forEach(box => {
-                box.classList.remove("selected");
-            });
-
-            button.classList.add("selected");
-            selectedSize = size;
-        }
-
-        function changeQuantity(amount) {
-            quantity = Math.max(1, quantity + amount);
-
-            document.getElementById("quantity-value").textContent = quantity;
-
-            const price = Number(currentProduct.price || 0);
-            const total = price * quantity;
-
-            document.getElementById("quantity-total").textContent =
-                "Total: Rs." + money(total);
-        }
-
-        function validateSelection() {
-            if (!selectedSize) {
-                showToast("Please select your size first.");
-                return false;
+   
+<script>
+    let allProducts = [];
+    let currentProduct = null;
+    let selectedSize = "";
+    let quantity = 1;
+    let productReviews = [];
+
+    const params = new URLSearchParams(window.location.search);
+    const productId = Number(params.get("id"));
+
+    function safeText(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[char]);
+    }
+
+    function money(value) {
+        return Number(value || 0).toLocaleString("en-PK");
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 2500);
+    }
+
+    async function loadProduct() {
+        try {
+            const response = await fetch("/api/products");
+
+            if (!response.ok) {
+                throw new Error("Products load nahi huay");
             }
 
-            return true;
-        }
+            allProducts = await response.json();
 
-        function addProductToCart() {
-            if (!validateSelection()) return;
-
-            let cart = JSON.parse(localStorage.getItem("tyStyleCart")) || [];
-
-            const existing = cart.find(item =>
-                Number(item.id) === Number(currentProduct.id) &&
-                item.size === selectedSize
+            currentProduct = allProducts.find(product =>
+                Number(product.id) === productId
             );
 
-            if (existing) {
-                existing.quantity += quantity;
-            } else {
-                cart.push({
-                    ...currentProduct,
-                    size: selectedSize,
-                    quantity: quantity
-                });
-            }
-
-            localStorage.setItem("tyStyleCart", JSON.stringify(cart));
-
-            showToast("Product added to your cart!");
-        }
-
-        function buyProduct() {
-            if (!validateSelection()) return;
-
-            if (currentProduct.stock === false) {
-                showToast("Sorry! This product is unavailable.");
+            if (!currentProduct) {
+                document.getElementById("product-details").innerHTML =
+                    "<h2 style='padding:80px;text-align:center'>Product not found!</h2>";
                 return;
             }
 
-            const selectedProduct = {
+            document.title = currentProduct.name + " | TY STYLE";
+
+            quantity = 1;
+            selectedSize = "";
+
+            renderProduct();
+            await loadReviews();
+
+        } catch (error) {
+            console.error(error);
+
+            document.getElementById("product-details").innerHTML =
+                "<p style='padding:80px;text-align:center'>Unable to load product. Please refresh.</p>";
+        }
+    }
+
+    function renderProduct() {
+        const p = currentProduct;
+
+        const sizes = Array.isArray(p.sizes) && p.sizes.length
+            ? p.sizes
+            : ["S", "M", "L", "XL", "XXL"];
+
+        const salePrice = Number(p.price || 0);
+        const regularPrice = Math.round(salePrice * 1.5);
+        const saving = regularPrice - salePrice;
+        const discount = regularPrice > 0
+            ? Math.round((saving / regularPrice) * 100)
+            : 0;
+
+        const available = p.stock !== false;
+
+        document.getElementById("product-details").innerHTML = `
+
+            <section class="product-main">
+
+                <div class="gallery">
+                    <div class="main-image-box">
+
+                        <span class="sale-label">SALE · ${discount}% OFF</span>
+
+                        <img
+                            class="main-image"
+                            src="${safeText(p.image || "")}"
+                            alt="${safeText(p.name)}"
+                            onerror="this.src='https://placehold.co/700x900?text=TY+STYLE'"
+                        >
+
+                    </div>
+
+                    <div class="gallery-caption">
+                        <span>TY STYLE COLLECTION</span>
+                        <span>PREMIUM STREETWEAR</span>
+                    </div>
+                </div>
+
+                <div class="product-info">
+
+                    <p class="product-category">
+                        ${safeText(p.category || "TY STYLE COLLECTION")}
+                    </p>
+
+                    <h1 class="product-title">
+                        ${safeText(p.name)}
+                    </h1>
+
+                    <a href="#customer-reviews" class="review-link">
+                        <span class="stars" id="top-review-stars">☆☆☆☆☆</span>
+                        <span id="top-review-count">No reviews yet</span>
+                    </a>
+
+                    <div class="price-area">
+
+                        <p class="regular-label">Regular price</p>
+
+                        <div class="price-row">
+                            <span class="sale-price">
+                                Rs.${money(salePrice)}
+                            </span>
+
+                            <span class="old-price">
+                                Rs.${money(regularPrice)}
+                            </span>
+
+                            <span class="discount">
+                                ${discount}% OFF
+                            </span>
+                        </div>
+
+                        <p class="saving">
+                            Save Rs.${money(saving)}
+                        </p>
+
+                        <p class="availability">
+                            <span style="background:${available ? '#222' : '#999'}"></span>
+                            ${available ? "Available" : "Unavailable"}
+                        </p>
+
+                    </div>
+
+                    <div class="option-heading">
+                        <strong>Size:</strong>
+                        <a href="#size-guide" class="size-guide">Size Guide</a>
+                    </div>
+
+                    <div class="size-options">
+                        ${sizes.map(size => `
+                            <button
+                                class="size-box"
+                                onclick="selectSize(this, '${safeText(size)}')"
+                            >
+                                ${safeText(size)}
+                            </button>
+                        `).join("")}
+                    </div>
+
+                    <div class="quantity-area">
+
+                        <strong>Quantity</strong>
+
+                        <div class="quantity-control">
+                            <button onclick="changeQuantity(-1)">−</button>
+                            <span id="quantity-value">1</span>
+                            <button onclick="changeQuantity(1)">+</button>
+                        </div>
+
+                        <p id="quantity-total" style="margin-top:15px;font-size:14px;font-weight:800;">
+                            Total: Rs.${money(salePrice)}
+                        </p>
+
+                        <div class="action-buttons">
+
+                            <button
+                                class="buy-button"
+                                onclick="buyProduct()"
+                                ${available ? "" : "disabled"}
+                            >
+                                BUY IT NOW
+                            </button>
+
+                            <button
+                                class="cart-button"
+                                onclick="addProductToCart()"
+                                ${available ? "" : "disabled"}
+                            >
+                                ADD TO CART
+                            </button>
+
+                        </div>
+
+                        <button class="enquiry-button" onclick="sendEnquiry()">
+                            PRODUCT ENQUIRY
+                        </button>
+
+                        <div class="trust-info">
+
+                            <div class="trust-item">
+                                <strong>QUALITY FIRST</strong>
+                                Carefully selected fashion essentials.
+                            </div>
+
+                            <div class="trust-item">
+                                <strong>SECURE ORDER</strong>
+                                Easy ordering through TY STYLE.
+                            </div>
+
+                            <div class="trust-item">
+                                <strong>SIZE OPTIONS</strong>
+                                Multiple sizes available.
+                            </div>
+
+                            <div class="trust-item">
+                                <strong>STREETWEAR STYLE</strong>
+                                Upgrade your everyday look.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="description-section">
+
+                <p class="product-category">DETAILS THAT MATTER</p>
+
+                <h2 class="section-heading">PRODUCT DESCRIPTION</h2>
+
+                <p class="description-text">
+                    Upgrade your everyday look with this
+                    ${safeText(p.name)} from TY STYLE.
+                    Designed for a stylish and comfortable
+                    everyday outfit. Pair it with your favourite
+                    jeans, trousers or other streetwear essentials.
+                </p>
+
+                <div class="description-grid">
+
+                    <div class="description-card">
+                        <strong>FABRIC & QUALITY</strong>
+                        <p>Comfortable fabric with a stylish finish and everyday wear feel.</p>
+                    </div>
+
+                    <div class="description-card">
+                        <strong>FIT & STYLE</strong>
+                        <p>Modern streetwear look designed to complement your wardrobe.</p>
+                    </div>
+
+                    <div class="description-card">
+                        <strong>WASH CARE</strong>
+                        <p>Follow the wash care label. Prefer gentle washing for better fabric life.</p>
+                    </div>
+
+                    <div class="description-card">
+                        <strong>COMFORT</strong>
+                        <p>Made for easy styling and comfortable everyday use.</p>
+                    </div>
+
+                    <div class="description-card">
+                        <strong>SIZE</strong>
+                        <p>Choose your preferred size before placing your order.</p>
+                    </div>
+
+                    <div class="description-card" id="size-guide">
+                        <strong>COLOUR NOTE</strong>
+                        <p>Actual product colour may vary slightly due to lighting and screen settings.</p>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="related-section">
+
+                <div class="related-heading">
+                    <p>COMPLETE YOUR LOOK</p>
+                    <h2>RELATED PRODUCTS</h2>
+                </div>
+
+                <div class="related-grid" id="related-grid"></div>
+
+            </section>
+
+            <section class="reviews-section" id="customer-reviews">
+
+                <p class="product-category">CUSTOMER FEEDBACK</p>
+
+                <h2 class="section-heading">Customer Reviews</h2>
+
+                <div class="reviews-top">
+
+                    <div class="rating-summary">
+
+                        <div class="rating-number" id="rating-number">0.0</div>
+
+                        <div>
+                            <div class="stars" id="rating-stars">☆☆☆☆☆</div>
+                            <p id="rating-count">No reviews yet</p>
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="write-review"
+                        onclick="writeReview()"
+                    >
+                        WRITE A REVIEW
+                    </button>
+
+                </div>
+
+                <div class="rating-bars" id="rating-bars"></div>
+
+                <div class="review-list" id="review-list">
+                    <p>Loading reviews...</p>
+                </div>
+
+            </section>
+
+        `;
+
+        renderRelatedProducts();
+    }
+
+    // LOAD REAL REVIEWS
+    async function loadReviews() {
+        const container = document.getElementById("review-list");
+
+        try {
+            const response = await fetch(
+                `/api/reviews/${encodeURIComponent(currentProduct.id)}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Reviews load nahi huay");
+            }
+
+            productReviews = await response.json();
+
+            if (!Array.isArray(productReviews)) {
+                productReviews = [];
+            }
+
+            renderReviews();
+
+        } catch (error) {
+            console.error("Reviews error:", error);
+
+            container.innerHTML =
+                "<p>Reviews load nahi ho sake. Please refresh.</p>";
+        }
+    }
+
+    // DISPLAY REAL REVIEWS AND RATINGS
+    function renderReviews() {
+        const reviews = productReviews;
+
+        const total = reviews.length;
+
+        const average = total
+            ? reviews.reduce((sum, review) => sum + Number(review.rating), 0) / total
+            : 0;
+
+        const roundedAverage = average.toFixed(1);
+
+        document.getElementById("rating-number").textContent = roundedAverage;
+
+        document.getElementById("rating-stars").textContent =
+            "★".repeat(Math.round(average)) +
+            "☆".repeat(5 - Math.round(average));
+
+        document.getElementById("rating-count").textContent =
+            total === 1 ? "1 review" : `${total} reviews`;
+
+        document.getElementById("top-review-stars").textContent =
+            "★".repeat(Math.round(average)) +
+            "☆".repeat(5 - Math.round(average));
+
+        document.getElementById("top-review-count").textContent =
+            total === 1 ? "1 Review" : `${total} Reviews`;
+
+        const bars = document.getElementById("rating-bars");
+
+        bars.innerHTML = [5, 4, 3, 2, 1].map(star => {
+            const count = reviews.filter(
+                review => Number(review.rating) === star
+            ).length;
+
+            const percentage = total
+                ? (count / total) * 100
+                : 0;
+
+            return `
+                <div class="rating-bar">
+                    <span>${star} Star</span>
+
+                    <div class="bar-bg">
+                        <div
+                            class="bar-fill"
+                            style="width:${percentage}%"
+                        ></div>
+                    </div>
+
+                    <span>${count}</span>
+                </div>
+            `;
+        }).join("");
+
+        const list = document.getElementById("review-list");
+
+        if (!total) {
+            list.innerHTML = `
+                <p style="color:#777;font-size:12px;padding:20px 0;">
+                    No reviews yet. Be the first customer to write a review!
+                </p>
+            `;
+            return;
+        }
+
+        list.innerHTML = reviews.slice().reverse().map(review => {
+            const rating = Math.max(
+                1,
+                Math.min(5, Number(review.rating) || 0)
+            );
+
+            const date = review.date
+                ? new Date(review.date).toLocaleDateString("en-PK")
+                : "";
+
+            return `
+                <article class="review-card">
+
+                    <div class="stars">
+                        ${"★".repeat(rating)}${"☆".repeat(5 - rating)}
+                    </div>
+
+                    <h4>${safeText(review.name)}</h4>
+
+                    <p>${safeText(review.comment)}</p>
+
+                    <p style="font-size:10px;color:#999;margin-top:12px;">
+                        ${safeText(date)}
+                    </p>
+
+                </article>
+            `;
+        }).join("");
+    }
+
+    // REVIEW FORM
+    function writeReview() {
+        if (document.getElementById("review-modal")) return;
+
+        const modal = document.createElement("div");
+
+        modal.id = "review-modal";
+
+        modal.style.cssText = `
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.65);
+            z-index:9999;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:15px;
+        `;
+
+        modal.innerHTML = `
+
+            <div style="
+                background:white;
+                width:100%;
+                max-width:480px;
+                padding:30px;
+                position:relative;
+                max-height:90vh;
+                overflow-y:auto;
+            ">
+
+                <button
+                    onclick="closeReviewForm()"
+                    style="
+                        position:absolute;
+                        right:18px;
+                        top:15px;
+                        border:none;
+                        background:none;
+                        font-size:25px;
+                    "
+                >×</button>
+
+                <p style="
+                    font-size:10px;
+                    font-weight:800;
+                    letter-spacing:2px;
+                    color:#888;
+                ">TY STYLE CUSTOMER FEEDBACK</p>
+
+                <h2 style="font-size:23px;margin:12px 0 22px;">
+                    Write a Review
+                </h2>
+
+                <form id="review-form" onsubmit="submitReview(event)">
+
+                    <label style="font-size:12px;font-weight:700;">
+                        Your Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="review-name"
+                        maxlength="50"
+                        required
+                        placeholder="Enter your name"
+                        style="
+                            width:100%;
+                            padding:13px;
+                            margin:8px 0 18px;
+                            border:1px solid #ddd;
+                            font:inherit;
+                            font-size:12px;
+                        "
+                    >
+
+                    <label style="font-size:12px;font-weight:700;">
+                        Your Rating
+                    </label>
+
+                    <select
+                        id="review-rating"
+                        required
+                        style="
+                            width:100%;
+                            padding:13px;
+                            margin:8px 0 18px;
+                            border:1px solid #ddd;
+                            font:inherit;
+                            font-size:12px;
+                            background:white;
+                        "
+                    >
+                        <option value="">Select rating</option>
+                        <option value="5">★★★★★ - Excellent</option>
+                        <option value="4">★★★★ - Very Good</option>
+                        <option value="3">★★★ - Good</option>
+                        <option value="2">★★ - Fair</option>
+                        <option value="1">★ - Poor</option>
+                    </select>
+
+                    <label style="font-size:12px;font-weight:700;">
+                        Your Review
+                    </label>
+
+                    <textarea
+                        id="review-comment"
+                        maxlength="1000"
+                        required
+                        placeholder="Share your honest experience..."
+                        rows="5"
+                        style="
+                            width:100%;
+                            padding:13px;
+                            margin:8px 0 20px;
+                            border:1px solid #ddd;
+                            font:inherit;
+                            font-size:12px;
+                            resize:vertical;
+                        "
+                    ></textarea>
+
+                    <button
+                        type="submit"
+                        id="review-submit"
+                        style="
+                            width:100%;
+                            height:50px;
+                            background:#171717;
+                            color:white;
+                            border:none;
+                            font-size:11px;
+                            font-weight:800;
+                            letter-spacing:1px;
+                        "
+                    >
+                        SUBMIT REVIEW
+                    </button>
+
+                </form>
+
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.addEventListener("click", event => {
+            if (event.target === modal) {
+                closeReviewForm();
+            }
+        });
+    }
+
+    function closeReviewForm() {
+        const modal = document.getElementById("review-modal");
+
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // SAVE CUSTOMER REVIEW
+    async function submitReview(event) {
+        event.preventDefault();
+
+        const name = document.getElementById("review-name").value.trim();
+        const rating = Number(document.getElementById("review-rating").value);
+        const comment = document.getElementById("review-comment").value.trim();
+
+        if (!name || !comment || rating < 1 || rating > 5) {
+            showToast("Please complete all review fields.");
+            return;
+        }
+
+        const submitButton = document.getElementById("review-submit");
+
+        submitButton.disabled = true;
+        submitButton.textContent = "SUBMITTING...";
+
+        try {
+            const response = await fetch("/api/reviews", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    productId: currentProduct.id,
+                    name,
+                    rating,
+                    comment
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || "Review submit nahi hua");
+            }
+
+            closeReviewForm();
+
+            showToast("Thank you! Your review has been submitted.");
+
+            await loadReviews();
+
+        } catch (error) {
+            console.error("Submit review error:", error);
+
+            showToast(error.message || "Review submit nahi hua.");
+
+            submitButton.disabled = false;
+            submitButton.textContent = "SUBMIT REVIEW";
+        }
+    }
+
+    function selectSize(button, size) {
+        document.querySelectorAll(".size-box").forEach(box => {
+            box.classList.remove("selected");
+        });
+
+        button.classList.add("selected");
+        selectedSize = size;
+    }
+
+    function changeQuantity(amount) {
+        quantity = Math.max(1, quantity + amount);
+
+        document.getElementById("quantity-value").textContent = quantity;
+
+        const price = Number(currentProduct.price || 0);
+        const total = price * quantity;
+
+        document.getElementById("quantity-total").textContent =
+            "Total: Rs." + money(total);
+    }
+
+    function validateSelection() {
+        if (!selectedSize) {
+            showToast("Please select your size first.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function addProductToCart() {
+        if (!validateSelection()) return;
+
+        let cart = JSON.parse(localStorage.getItem("tyStyleCart")) || [];
+
+        const existing = cart.find(item =>
+            Number(item.id) === Number(currentProduct.id) &&
+            item.size === selectedSize
+        );
+
+        if (existing) {
+            existing.quantity += quantity;
+        } else {
+            cart.push({
                 ...currentProduct,
                 size: selectedSize,
                 quantity: quantity
-            };
-
-            localStorage.setItem(
-                "tyStyleBuyNow",
-                JSON.stringify(selectedProduct)
-            );
-
-            window.location.href = "buy-now.html";
+            });
         }
 
-        function sendEnquiry() {
-            const message = `Hello TY STYLE! I want to enquire about ${currentProduct.name}.`;
+        localStorage.setItem("tyStyleCart", JSON.stringify(cart));
 
-            window.open(
-                "https://wa.me/?text=" + encodeURIComponent(message),
-                "_blank"
-            );
+        showToast("Product added to your cart!");
+    }
+
+    function buyProduct() {
+        if (!validateSelection()) return;
+
+        if (currentProduct.stock === false) {
+            showToast("Sorry! This product is unavailable.");
+            return;
         }
 
-        function writeReview() {
-            showToast("Review submission will be connected soon.");
+        const selectedProduct = {
+            ...currentProduct,
+            size: selectedSize,
+            quantity: quantity
+        };
+
+        localStorage.setItem(
+            "tyStyleBuyNow",
+            JSON.stringify(selectedProduct)
+        );
+
+        window.location.href = "buy-now.html";
+    }
+
+    function sendEnquiry() {
+        const message =
+            `Hello TY STYLE! I want to enquire about ${currentProduct.name}.`;
+
+        window.open(
+            "https://wa.me/?text=" + encodeURIComponent(message),
+            "_blank"
+        );
+    }
+
+    function renderRelatedProducts() {
+        const related = allProducts
+            .filter(product =>
+                Number(product.id) !== Number(currentProduct.id)
+            )
+            .slice(0, 4);
+
+        const container = document.getElementById("related-grid");
+
+        if (!related.length) {
+            container.innerHTML = "<p>No related products available.</p>";
+            return;
         }
 
-        function renderRelatedProducts() {
-            const related = allProducts
-                .filter(product =>
-                    Number(product.id) !== Number(currentProduct.id)
-                )
-                .slice(0, 4);
+        container.innerHTML = related.map(product => `
+            <article
+                class="related-card"
+                onclick="openRelatedProduct(${Number(product.id)})"
+            >
 
-            const container = document.getElementById("related-grid");
-
-            if (!related.length) {
-                container.innerHTML = "<p>No related products available.</p>";
-                return;
-            }
-
-            container.innerHTML = related.map(product => `
-                <article
-                    class="related-card"
-                    onclick="openRelatedProduct(${Number(product.id)})"
+                <img
+                    src="${safeText(product.image || "")}"
+                    alt="${safeText(product.name)}"
+                    loading="lazy"
+                    onerror="this.src='https://placehold.co/500x600?text=TY+STYLE'"
                 >
 
-                    <img
-                        src="${safeText(product.image || "")}"
-                        alt="${safeText(product.name)}"
-                        loading="lazy"
-                        onerror="this.src='https://placehold.co/500x600?text=TY+STYLE'"
-                    >
+                <div class="related-info">
 
-                    <div class="related-info">
+                    <p>${safeText(product.category || "COLLECTION")}</p>
 
-                        <p>${safeText(product.category || "COLLECTION")}</p>
+                    <h3>${safeText(product.name)}</h3>
 
-                        <h3>${safeText(product.name)}</h3>
+                    <strong>Rs.${money(product.price)}</strong>
 
-                        <strong>Rs.${money(product.price)}</strong>
+                </div>
 
-                    </div>
+            </article>
+        `).join("");
+    }
 
-                </article>
-            `).join("");
-        }
+    function openRelatedProduct(id) {
+        window.location.href = `product.html?id=${id}`;
+    }
 
-        function openRelatedProduct(id) {
-            window.location.href = `product.html?id=${id}`;
-        }
-
-        loadProduct();
-    </script>
+    loadProduct();
+</script>
 
 </body>
 </html>
