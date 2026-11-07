@@ -894,6 +894,9 @@
                             <p class="saving">
                                 Save Rs.${money(saving)}
                             </p>
+                            <p class="saving" id="quantity-total">
+    Total: Rs.${money(salePrice * quantity)}
+</p>
 
                             <p class="availability">
                                 <span style="background:${available ? '#222' : '#999'}"></span>
@@ -1129,13 +1132,18 @@
 
         }
 
-        function changeQuantity(amount) {
+       function changeQuantity(amount) {
 
-            quantity = Math.max(1, quantity + amount);
+    quantity = Math.max(1, quantity + amount);
 
-            document.getElementById("quantity-value").textContent = quantity;
+    document.getElementById("quantity-value").textContent = quantity;
 
-        }
+    const total = Number(currentProduct.price) * quantity;
+
+    document.getElementById("quantity-total").textContent =
+        "Total: Rs." + money(total);
+
+}
 
         function validateSelection() {
 
