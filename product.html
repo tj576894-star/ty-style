@@ -622,7 +622,6 @@
         /* RESPONSIVE */
 
         @media(max-width: 850px) {
-
             .product-main {
                 gap: 30px;
             }
@@ -634,11 +633,9 @@
             .related-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-
         }
 
         @media(max-width: 600px) {
-
             .top-header {
                 height: 65px;
                 padding: 0 5%;
@@ -705,7 +702,6 @@
                 flex-direction: column;
                 text-align: center;
             }
-
         }
     </style>
 </head>
@@ -729,7 +725,6 @@
     </footer>
 
     <script>
-
         let allProducts = [];
         let currentProduct = null;
         let selectedSize = "";
@@ -763,9 +758,7 @@
         }
 
         async function loadProduct() {
-
             try {
-
                 const response = await fetch("/api/products");
 
                 if (!response.ok) {
@@ -786,20 +779,20 @@
 
                 document.title = currentProduct.name + " | TY STYLE";
 
+                quantity = 1;
+                selectedSize = "";
+
                 renderProduct();
 
             } catch (error) {
-
                 console.error(error);
 
                 document.getElementById("product-details").innerHTML =
                     "<p style='padding:80px;text-align:center'>Unable to load product. Please refresh.</p>";
-
             }
         }
 
         function renderProduct() {
-
             const p = currentProduct;
 
             const sizes = Array.isArray(p.sizes) && p.sizes.length
@@ -809,7 +802,9 @@
             const salePrice = Number(p.price || 0);
             const regularPrice = Math.round(salePrice * 1.5);
             const saving = regularPrice - salePrice;
-            const discount = Math.round((saving / regularPrice) * 100);
+            const discount = regularPrice > 0
+                ? Math.round((saving / regularPrice) * 100)
+                : 0;
 
             const available = p.stock !== false;
 
@@ -835,7 +830,6 @@
                 <section class="product-main">
 
                     <div class="gallery">
-
                         <div class="main-image-box">
 
                             <span class="sale-label">SALE · ${discount}% OFF</span>
@@ -853,7 +847,6 @@
                             <span>TY STYLE COLLECTION</span>
                             <span>PREMIUM STREETWEAR</span>
                         </div>
-
                     </div>
 
                     <div class="product-info">
@@ -876,7 +869,6 @@
                             <p class="regular-label">Regular price</p>
 
                             <div class="price-row">
-
                                 <span class="sale-price">
                                     Rs.${money(salePrice)}
                                 </span>
@@ -888,16 +880,12 @@
                                 <span class="discount">
                                     ${discount}% OFF
                                 </span>
-
                             </div>
 
-                          
-                          <p class="saving">
-    Save Rs.${money(saving)}
-</p>
-<p id="quantity-total" style="margin-top:15px;font-size:14px;font-weight:800;">
-    Total: Rs.0
-</p>
+                            <p class="saving">
+                                Save Rs.${money(saving)}
+                            </p>
+
                             <p class="availability">
                                 <span style="background:${available ? '#222' : '#999'}"></span>
                                 ${available ? "Available" : "Unavailable"}
@@ -911,7 +899,6 @@
                         </div>
 
                         <div class="size-options">
-
                             ${sizes.map(size => `
                                 <button
                                     class="size-box"
@@ -920,71 +907,68 @@
                                     ${safeText(size)}
                                 </button>
                             `).join("")}
-
                         </div>
 
                         <div class="quantity-area">
 
                             <strong>Quantity</strong>
 
-                           <div class="quantity-control">
+                            <div class="quantity-control">
+                                <button onclick="changeQuantity(-1)">−</button>
+                                <span id="quantity-value">1</span>
+                                <button onclick="changeQuantity(1)">+</button>
+                            </div>
 
-    <button onclick="changeQuantity(-1)">−</button>
+                            <p id="quantity-total" style="margin-top:15px;font-size:14px;font-weight:800;">
+                                Total: Rs.${money(salePrice)}
+                            </p>
 
-    <span id="quantity-value">1</span>
+                            <div class="action-buttons">
 
-    <button onclick="changeQuantity(1)">+</button>
+                                <button
+                                    class="buy-button"
+                                    onclick="buyProduct()"
+                                    ${available ? "" : "disabled"}
+                                >
+                                    BUY IT NOW
+                                </button>
 
-</div>
+                                <button
+                                    class="cart-button"
+                                    onclick="addProductToCart()"
+                                    ${available ? "" : "disabled"}
+                                >
+                                    ADD TO CART
+                                </button>
 
-<p id="quantity-total" style="margin-top:15px;font-size:14px;font-weight:800;">
-    Total: Rs.0
-</p>
+                            </div>
 
-                        <div class="action-buttons">
-
-                            <button
-                                class="buy-button"
-                                onclick="buyProduct()"
-                                ${available ? "" : "disabled"}
-                            >
-                                BUY IT NOW
+                            <button class="enquiry-button" onclick="sendEnquiry()">
+                                PRODUCT ENQUIRY
                             </button>
 
-                            <button
-                                class="cart-button"
-                                onclick="addProductToCart()"
-                                ${available ? "" : "disabled"}
-                            >
-                                ADD TO CART
-                            </button>
+                            <div class="trust-info">
 
-                        </div>
+                                <div class="trust-item">
+                                    <strong>QUALITY FIRST</strong>
+                                    Carefully selected fashion essentials.
+                                </div>
 
-                        <button class="enquiry-button" onclick="sendEnquiry()">
-                            PRODUCT ENQUIRY
-                        </button>
+                                <div class="trust-item">
+                                    <strong>SECURE ORDER</strong>
+                                    Easy ordering through TY STYLE.
+                                </div>
 
-                        <div class="trust-info">
+                                <div class="trust-item">
+                                    <strong>SIZE OPTIONS</strong>
+                                    Multiple sizes available.
+                                </div>
 
-                            <div class="trust-item">
-                                <strong>QUALITY FIRST</strong>
-                                Carefully selected fashion essentials.
-                            </div>
+                                <div class="trust-item">
+                                    <strong>STREETWEAR STYLE</strong>
+                                    Upgrade your everyday look.
+                                </div>
 
-                            <div class="trust-item">
-                                <strong>SECURE ORDER</strong>
-                                Easy ordering through TY STYLE.
-                            </div>
-
-                            <div class="trust-item">
-                                <strong>SIZE OPTIONS</strong>
-                                Multiple sizes available.
-                            </div>
-
-                            <div class="trust-item">
-                                <strong>STREETWEAR STYLE</strong>
-                                Upgrade your everyday look.
                             </div>
 
                         </div>
@@ -1118,51 +1102,41 @@
                 </section>
 
             `;
-            document.getElementById("quantity-total").textContent =
-    "Total: Rs." + money(salePrice * quantity);
 
             renderRelatedProducts();
-
         }
 
         function selectSize(button, size) {
-
             document.querySelectorAll(".size-box").forEach(box => {
                 box.classList.remove("selected");
             });
 
             button.classList.add("selected");
             selectedSize = size;
-
         }
 
-     function changeQuantity(amount) {
+        function changeQuantity(amount) {
+            quantity = Math.max(1, quantity + amount);
 
-    quantity = Math.max(1, quantity + amount);
+            document.getElementById("quantity-value").textContent = quantity;
 
-    document.getElementById("quantity-value").textContent = quantity;
+            const price = Number(currentProduct.price || 0);
+            const total = price * quantity;
 
-    const price = Number(currentProduct.price);
-    const total = price * quantity;
-
-    document.getElementById("quantity-total").textContent =
-        "Total: Rs." + money(total);
-
-}
+            document.getElementById("quantity-total").textContent =
+                "Total: Rs." + money(total);
+        }
 
         function validateSelection() {
-
             if (!selectedSize) {
                 showToast("Please select your size first.");
                 return false;
             }
 
             return true;
-
         }
 
         function addProductToCart() {
-
             if (!validateSelection()) return;
 
             let cart = JSON.parse(localStorage.getItem("tyStyleCart")) || [];
@@ -1185,11 +1159,9 @@
             localStorage.setItem("tyStyleCart", JSON.stringify(cart));
 
             showToast("Product added to your cart!");
-
         }
 
         function buyProduct() {
-
             if (!validateSelection()) return;
 
             if (currentProduct.stock === false) {
@@ -1209,28 +1181,22 @@
             );
 
             window.location.href = "buy-now.html";
-
         }
 
         function sendEnquiry() {
-
             const message = `Hello TY STYLE! I want to enquire about ${currentProduct.name}.`;
 
             window.open(
                 "https://wa.me/?text=" + encodeURIComponent(message),
                 "_blank"
             );
-
         }
 
         function writeReview() {
-
             showToast("Review submission will be connected soon.");
-
         }
 
         function renderRelatedProducts() {
-
             const related = allProducts
                 .filter(product =>
                     Number(product.id) !== Number(currentProduct.id)
@@ -1245,7 +1211,6 @@
             }
 
             container.innerHTML = related.map(product => `
-
                 <article
                     class="related-card"
                     onclick="openRelatedProduct(${Number(product.id)})"
@@ -1269,19 +1234,14 @@
                     </div>
 
                 </article>
-
             `).join("");
-
         }
 
         function openRelatedProduct(id) {
-
             window.location.href = `product.html?id=${id}`;
-
         }
 
         loadProduct();
-
     </script>
 
 </body>
