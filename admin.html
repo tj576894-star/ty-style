@@ -2,687 +2,728 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TY Style - Admin Panel</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TY STYLE | Admin Dashboard</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background: #f4f4f4;
-            color: #222;
-        }
-
-        header {
-            background: #111;
-            color: white;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        header h1 { font-size: 24px; }
-        header span { color: #ccc; }
-
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card, .section {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-        }
-
-        .card h3 { margin-bottom: 10px; }
-
-        .card p {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .section { margin-bottom: 25px; }
-        .section h2 { margin-bottom: 20px; }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            font-size: 15px;
-        }
-
-        button {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 3px;
-        }
-
-        button:hover { opacity: 0.85; }
-
-        .add-btn {
-            background: #111;
-            color: white;
-            margin-top: 15px;
-        }
-
-        .product {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-            padding: 15px 0;
-            gap: 10px;
-        }
-
-        .product:last-child { border-bottom: none; }
-
-        .product-info h3 { margin-bottom: 5px; }
-        .product-info p { color: #555; margin: 4px 0; }
-
-        .stock { font-weight: bold; }
-        .in-stock { color: green; }
-        .out-stock { color: red; }
-
-        .delete-btn {
-            background: #d32f2f;
-            color: white;
-        }
-
-        .order {
-            border: 1px solid #ddd;
-            padding: 18px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .order h3 { margin-bottom: 8px; }
-        .order p { margin: 7px 0; }
-
-        .status-select {
-            margin-top: 8px;
-            max-width: 250px;
-        }
-
-        .whatsapp-btn {
-            background: #25D366;
-            color: white;
-            margin-top: 12px;
-        }
-
-        @media (max-width: 700px) {
-            .dashboard, .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            header {
-                padding: 18px;
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .product {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-    </style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f4f5f7;color:#222}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#151515;color:white;padding:25px 15px;flex-shrink:0}
+.logo{font-size:25px;font-weight:bold;padding:5px 12px 30px}
+.logo span{color:#aaa}
+.nav-btn{display:flex;align-items:center;width:100%;padding:14px 15px;margin:5px 0;border:0;background:transparent;color:#ccc;text-align:left;border-radius:8px;font-size:15px;cursor:pointer}
+.nav-btn:hover,.nav-btn.active{background:#333;color:white}
+.main{flex:1;min-width:0}
+.topbar{height:75px;background:white;padding:0 30px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eee}
+.topbar h2{font-size:21px}
+.admin-label{background:#eee;padding:9px 14px;border-radius:20px;font-size:12px}
+.content{padding:30px;max-width:1500px;margin:auto}
+.page{display:none}
+.page.active{display:block}
+.page-heading{margin-bottom:22px}
+.page-heading h1{font-size:27px;margin-bottom:7px}
+.page-heading p{color:#777;font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:25px}
+.card,.section{background:white;padding:23px;border-radius:12px;box-shadow:0 3px 12px #00000008}
+.card h3{font-size:14px;color:#777;margin-bottom:13px}
+.card strong{font-size:28px}
+.section{margin-bottom:22px}
+.section h2{font-size:19px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:7px;font-size:14px;background:white}
+textarea{min-height:90px;resize:vertical}
+label{font-size:13px;font-weight:bold;display:block;margin-bottom:7px}
+.field{margin-bottom:14px}
+button{cursor:pointer;border:0;border-radius:7px;padding:11px 15px;font-weight:bold}
+button:hover{opacity:.85}
+.primary{background:#151515;color:white}
+.danger{background:#d93434;color:white}
+.green{background:#20a464;color:white}
+.grey{background:#eee;color:#222}
+.product-card,.order-card,.review-card{background:white;border:1px solid #eee;border-radius:10px;padding:18px;margin-bottom:14px}
+.product-card h3,.order-card h3{margin-bottom:9px}
+.product-card p,.order-card p,.review-card p{margin:7px 0;color:#555;font-size:14px}
+.product-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.size-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.size-option{border:1px solid #ddd;padding:9px 12px;border-radius:7px;font-size:13px}
+.size-option.available{background:#e8f7ee;color:#16834c;border-color:#a9dfbd}
+.size-option.unavailable{background:#fff0f0;color:#c22;border-color:#f0baba}
+.status{font-weight:bold}
+.muted{color:#888;font-size:13px}
+.empty{padding:25px;text-align:center;color:#888;background:white;border-radius:10px}
+.review-stars{color:#e7a400;font-size:18px}
+.whatsapp{background:#25D366;color:white}
+.mobile-menu{display:none;background:#222;color:white}
+@media(max-width:850px){
+.sidebar{width:190px}
+.stats{grid-template-columns:repeat(2,1fr)}
+.content{padding:18px}
+}
+@media(max-width:600px){
+.layout{display:block}
+.sidebar{width:100%;padding:12px;display:none}
+.sidebar.open{display:block}
+.logo{padding:10px}
+.nav-btn{display:inline-block;width:auto;padding:10px}
+.topbar{padding:0 15px;height:65px}
+.mobile-menu{display:block}
+.stats,.grid{grid-template-columns:1fr}
+.content{padding:14px}
+}
+</style>
 </head>
 
 <body>
+<div class="layout">
 
-<header>
-    <h1>TY STYLE — Admin Panel</h1>
-    <span>Store Management</span>
+<aside class="sidebar" id="sidebar">
+    <div class="logo">TY <span>STYLE</span></div>
+    <button class="nav-btn active" data-page="dashboard">▦ Dashboard</button>
+    <button class="nav-btn" data-page="orders">▣ Orders</button>
+    <button class="nav-btn" data-page="products">◈ Products</button>
+    <button class="nav-btn" data-page="reviews">★ Reviews</button>
+    <button class="nav-btn" data-page="customers">♙ Customers</button>
+    <button class="nav-btn" data-page="settings">⚙ Settings</button>
+</aside>
+
+<main class="main">
+<header class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+        <button class="mobile-menu" id="mobile-menu">☰</button>
+        <h2 id="page-title">Dashboard</h2>
+    </div>
+    <span class="admin-label">STORE ADMIN</span>
 </header>
 
-<div class="container">
+<div class="content">
 
-    <div class="dashboard">
+<!-- DASHBOARD -->
+<section class="page active" id="dashboard">
+    <div class="page-heading">
+        <h1>Dashboard Overview</h1>
+        <p>TY STYLE store ki complete summary.</p>
+    </div>
 
-        <div class="card">
-            <h3>Total Products</h3>
-            <p id="product-count">0</p>
-        </div>
+    <div class="stats">
+        <div class="card"><h3>Total Products</h3><strong id="product-count">0</strong></div>
+        <div class="card"><h3>Total Orders</h3><strong id="order-count">0</strong></div>
+        <div class="card"><h3>Total Sales</h3><strong id="total-sales">Rs. 0</strong></div>
+        <div class="card"><h3>Total Customers</h3><strong id="customer-count">0</strong></div>
+    </div>
 
-        <div class="card">
-            <h3>Total Orders</h3>
-            <p id="order-count">0</p>
-        </div>
+    <div class="section">
+        <h2>Recent Orders</h2>
+        <div id="recent-orders"></div>
+    </div>
 
-        <div class="card">
-            <h3>Total Sales</h3>
-            <p id="total-sales">Rs. 0</p>
-        </div>
+    <div class="section">
+        <h2>Store Information</h2>
+        <p class="muted">Yahan se tum apni store ki products, orders, discounts aur reviews manage kar sakte ho.</p>
+    </div>
+</section>
 
+<!-- ORDERS -->
+<section class="page" id="orders">
+    <div class="page-heading">
+        <h1>Customer Orders</h1>
+        <p>Har order ki details aur status yahan manage karo.</p>
+    </div>
+    <div id="orders-list"></div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="page" id="products">
+    <div class="page-heading">
+        <h1>Products Management</h1>
+        <p>Products add, edit, discount aur sizes manage karo.</p>
     </div>
 
     <div class="section">
         <h2>Add New Product</h2>
-
-        <div class="form-grid">
-
-            <input type="text" id="product-name" placeholder="Product Name">
-
-            <input type="number" id="product-price" placeholder="Price">
-
-            <select id="product-category">
-                <option value="Hoodies">Hoodies</option>
-                <option value="Shirts">Shirts</option>
-                <option value="Pants">Pants</option>
-                <option value="Sweatshirts">Sweatshirts</option>
-            </select>
-
-            <input type="text" id="product-size" placeholder="Sizes e.g. S,M,L,XL">
-
-            <input type="text" id="product-image" placeholder="Product Image URL">
-
+        <div class="grid">
+            <div class="field">
+                <label>Product Name</label>
+                <input id="product-name" placeholder="Product name">
+            </div>
+            <div class="field">
+                <label>Original Price (Rs.)</label>
+                <input id="product-price" type="number" min="1" placeholder="5000">
+            </div>
+            <div class="field">
+                <label>Sale Price (Rs.) — Optional</label>
+                <input id="product-sale-price" type="number" min="1" placeholder="3500">
+            </div>
+            <div class="field">
+                <label>Category</label>
+                <select id="product-category">
+                    <option>Hoodies</option>
+                    <option>Shirts</option>
+                    <option>Pants</option>
+                    <option>Sweatshirts</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Available Sizes</label>
+                <input id="product-size" placeholder="S,M,L,XL">
+            </div>
+            <div class="field">
+                <label>Product Image URL</label>
+                <input id="product-image" placeholder="Image URL">
+            </div>
         </div>
-
-        <button class="add-btn" onclick="addProduct()">
-            Add Product
-        </button>
+        <button class="primary" id="add-product-btn">+ Add Product</button>
     </div>
 
     <div class="section">
-        <h2>Products</h2>
+        <h2>All Products</h2>
         <div id="products-list"></div>
     </div>
+</section>
 
-    <div class="section">
-        <h2>Customer Orders</h2>
-        <div id="orders-list"></div>
+<!-- REVIEWS -->
+<section class="page" id="reviews">
+    <div class="page-heading">
+        <h1>Customer Reviews</h1>
+        <p>Customers ke submit kiye huay reviews.</p>
     </div>
+    <div id="reviews-list"></div>
+</section>
 
+<!-- CUSTOMERS -->
+<section class="page" id="customers">
+    <div class="page-heading">
+        <h1>Customers</h1>
+        <p>Customer details aur unke orders.</p>
+    </div>
+    <div id="customers-list"></div>
+</section>
+
+<!-- SETTINGS -->
+<section class="page" id="settings">
+    <div class="page-heading">
+        <h1>Settings</h1>
+        <p>Store management information.</p>
+    </div>
+    <div class="section">
+        <h2>TY STYLE</h2>
+        <p>Store currency: Pakistani Rupees (PKR)</p>
+        <p style="margin-top:10px">Website: ty-style.ethiodeploy.app</p>
+        <p class="muted" style="margin-top:15px">Admin security aur login system alag se configure karna zaroori hai.</p>
+    </div>
+</section>
+
+</div>
+</main>
 </div>
 
 <script>
-
 let products = [];
 let orders = [];
+let reviews = [];
 
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;",
+        '"':"&quot;", "'":"&#39;"
+    })[char]);
+}
+
+/* PAGE NAVIGATION */
+document.querySelectorAll(".nav-btn").forEach(button => {
+    button.addEventListener("click", () => {
+        document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+
+        button.classList.add("active");
+        $(button.dataset.page).classList.add("active");
+        $("page-title").textContent = button.textContent.trim();
+
+        $("sidebar").classList.remove("open");
+    });
+});
+
+$("mobile-menu").addEventListener("click", () => {
+    $("sidebar").classList.toggle("open");
+});
 
 /* SAVE PRODUCTS */
-
 async function saveProducts() {
+    try {
+        const response = await fetch("/api/products", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(products)
+        });
 
-    const response = await fetch("/api/products", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(products)
-    });
-
-    if (!response.ok) {
-        alert("Products save nahi hue.");
+        if (!response.ok) throw new Error("Save failed");
+        return true;
+    } catch (error) {
+        console.error(error);
+        alert("Products save nahi hue. Server check karo.");
         return false;
     }
-
-    return true;
 }
 
-
 /* LOAD PRODUCTS */
-
 async function loadProducts() {
-
     try {
-
         const response = await fetch("/api/products");
-
-        if (!response.ok) {
-            throw new Error("Products load nahi hue");
-        }
+        if (!response.ok) throw new Error("Products load failed");
 
         products = await response.json();
+        if (!Array.isArray(products)) products = [];
+
+        // Purane products ke liye default size stock
+        products.forEach(product => {
+            if (!product.sizeStock) {
+                product.sizeStock = {};
+                (product.sizes || []).forEach(size => {
+                    product.sizeStock[size] = true;
+                });
+            }
+        });
 
         displayProducts();
-
+        updateDashboard();
     } catch (error) {
-
         console.error(error);
-
-        alert("Products load nahi ho sake.");
-
+        $("products-list").innerHTML = '<div class="empty">Products load nahi ho sake.</div>';
     }
 }
 
-
 /* ADD PRODUCT */
-
 async function addProduct() {
+    const name = $("product-name").value.trim();
+    const price = Number($("product-price").value);
+    const saleInput = $("product-sale-price").value.trim();
+    const salePrice = saleInput === "" ? null : Number(saleInput);
+    const category = $("product-category").value;
+    const sizes = $("product-size").value.split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
+    const image = $("product-image").value.trim();
 
-    const name = document.getElementById("product-name").value.trim();
+    if (!name || !price || price <= 0 || !sizes.length || !image) {
+        alert("Product ki tamam zaroori information fill karo.");
+        return;
+    }
 
-    const price = Number(document.getElementById("product-price").value);
-
-    const category = document.getElementById("product-category").value;
-
-    const sizes = document.getElementById("product-size").value.trim();
-
-    const image = document.getElementById("product-image").value.trim();
-
-    if (!name || !price || price <= 0 || !sizes || !image) {
-
-        alert("Product ki tamam information fill karo.");
-
+    if (salePrice !== null && (salePrice <= 0 || salePrice >= price)) {
+        alert("Sale price original price se kam honi chahiye.");
         return;
     }
 
     const product = {
         id: Date.now(),
-        name: name,
-        price: price,
-        category: category,
-        sizes: sizes.split(",").map(size => size.trim()),
-        image: image,
+        name,
+        price,
+        ...(salePrice !== null ? {salePrice} : {}),
+        category,
+        sizes: [...new Set(sizes)],
+        sizeStock: Object.fromEntries([...new Set(sizes)].map(size => [size, true])),
+        image,
         stock: true
     };
 
     products.push(product);
 
-    const saved = await saveProducts();
-
-    if (!saved) {
+    if (!await saveProducts()) {
         products.pop();
         return;
     }
 
-    document.getElementById("product-name").value = "";
-    document.getElementById("product-price").value = "";
-    document.getElementById("product-size").value = "";
-    document.getElementById("product-image").value = "";
+    $("product-name").value = "";
+    $("product-price").value = "";
+    $("product-sale-price").value = "";
+    $("product-size").value = "";
+    $("product-image").value = "";
 
     displayProducts();
+    updateDashboard();
+    alert("Product successfully add ho gaya!");
 }
 
-
-/* DELETE PRODUCT */
-
-async function deleteProduct(id) {
-
-    const oldProducts = products;
-
-    products = products.filter(product => product.id !== id);
-
-    if (!await saveProducts()) {
-        products = oldProducts;
-        return;
-    }
-
-    displayProducts();
-}
-
-
-/* STOCK */
-
-async function toggleStock(id) {
-
-    const product = products.find(product => product.id === id);
-
-    if (!product) return;
-
-    product.stock = !product.stock;
-
-    if (!await saveProducts()) {
-        product.stock = !product.stock;
-        return;
-    }
-
-    displayProducts();
-}
-
-
-/* EDIT PRICE */
-
-async function editPrice(id) {
-
-    const product = products.find(product => product.id === id);
-
-    if (!product) return;
-
-    const oldPrice = product.price;
-
-    const newPrice = prompt("New price enter karo:", product.price);
-
-    if (newPrice === null) return;
-
-    if (newPrice.trim() === "" || isNaN(newPrice) || Number(newPrice) <= 0) {
-
-        alert("Valid price enter karo.");
-
-        return;
-    }
-
-    product.price = Number(newPrice);
-
-    if (!await saveProducts()) {
-        product.price = oldPrice;
-        return;
-    }
-
-    displayProducts();
-}
-
+$("add-product-btn").addEventListener("click", addProduct);
 
 /* DISPLAY PRODUCTS */
-
 function displayProducts() {
-
-    const list = document.getElementById("products-list");
-
+    const list = $("products-list");
     list.innerHTML = "";
 
+    if (!products.length) {
+        list.innerHTML = '<div class="empty">Abhi koi product nahi hai.</div>';
+        return;
+    }
+
     products.forEach(product => {
+        const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+
+        const sizeHTML = sizes.map(size => {
+            const available = product.sizeStock?.[size] !== false;
+            return `
+                <button class="size-option ${available ? "available" : "unavailable"}"
+                    data-action="size" data-id="${escapeHTML(product.id)}"
+                    data-size="${escapeHTML(size)}">
+                    ${escapeHTML(size)} — ${available ? "ON" : "OFF"}
+                </button>`;
+        }).join("");
+
+        const sale = Number(product.salePrice);
+        const hasDiscount = sale > 0 && sale < Number(product.price);
 
         const div = document.createElement("div");
-
-        div.className = "product";
-
-        const safeSizes = Array.isArray(product.sizes)
-            ? product.sizes.join(", ")
-            : "";
+        div.className = "product-card";
 
         div.innerHTML = `
-            <div class="product-info">
-
-                <h3>${product.name}</h3>
-
-                <p>Rs. ${product.price}</p>
-
-                <p>Category: ${product.category}</p>
-
-                <p>Sizes: ${safeSizes}</p>
-
-                <p class="stock ${product.stock ? "in-stock" : "out-stock"}">
-                    ${product.stock ? "IN STOCK" : "OUT OF STOCK"}
-                </p>
-
+            <h3>${escapeHTML(product.name)}</h3>
+            <p>Original Price: Rs. ${Number(product.price || 0).toLocaleString("en-PK")}</p>
+            <p>Sale Price: ${hasDiscount ? "Rs. " + sale.toLocaleString("en-PK") : "No discount"}</p>
+            ${hasDiscount ? `<p style="color:green;font-weight:bold">${Math.round((1-sale/product.price)*100)}% OFF</p>` : ""}
+            <p>Category: ${escapeHTML(product.category)}</p>
+            <p>Stock: <strong>${product.stock === false ? "OUT OF STOCK" : "IN STOCK"}</strong></p>
+            <p style="margin-top:12px"><strong>Manage Individual Sizes:</strong></p>
+            <div class="size-list">${sizeHTML || "No sizes added"}</div>
+            <div class="product-actions">
+                <button class="grey" data-action="discount" data-id="${escapeHTML(product.id)}">Edit Discount</button>
+                <button class="grey" data-action="price" data-id="${escapeHTML(product.id)}">Edit Price</button>
+                <button class="grey" data-action="stock" data-id="${escapeHTML(product.id)}">${product.stock === false ? "Stock ON" : "Out of Stock"}</button>
+                <button class="danger" data-action="delete" data-id="${escapeHTML(product.id)}">Delete</button>
             </div>
+        `;
+        list.appendChild(div);
+    });
 
-            <div>
+    $("product-count").textContent = products.length;
+}
 
-                <button onclick="editPrice(${product.id})">
-                    Edit Price
-                </button>
+/* PRODUCT BUTTON ACTIONS */
+$("products-list").addEventListener("click", async event => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
 
-                <button onclick="toggleStock(${product.id})">
-                    ${product.stock ? "Out of Stock" : "Stock On"}
-                </button>
+    const id = button.dataset.id;
+    const product = products.find(p => String(p.id) === String(id));
+    if (!product) return;
 
-                <button class="delete-btn" onclick="deleteProduct(${product.id})">
-                    Delete
-                </button>
+    const action = button.dataset.action;
 
+    if (action === "size") {
+        const size = button.dataset.size;
+        const oldValue = product.sizeStock?.[size] !== false;
+
+        product.sizeStock = product.sizeStock || {};
+        product.sizeStock[size] = !oldValue;
+
+        if (!await saveProducts()) product.sizeStock[size] = oldValue;
+        displayProducts();
+        return;
+    }
+
+    if (action === "stock") {
+        const oldValue = product.stock;
+        product.stock = product.stock === false;
+        if (!await saveProducts()) product.stock = oldValue;
+        displayProducts();
+        return;
+    }
+
+    if (action === "price") {
+        const oldPrice = product.price;
+        const value = prompt("New original price enter karo:", product.price);
+        if (value === null) return;
+
+        const newPrice = Number(value);
+        if (!newPrice || newPrice <= 0) {
+            alert("Valid price enter karo.");
+            return;
+        }
+
+        product.price = newPrice;
+        if (!await saveProducts()) product.price = oldPrice;
+        displayProducts();
+        return;
+    }
+
+    if (action === "discount") {
+        const oldSale = product.salePrice;
+        const value = prompt("Sale price enter karo. Discount hatane ke liye blank chhor do:", product.salePrice || "");
+
+        if (value === null) return;
+
+        if (value.trim() === "") {
+            delete product.salePrice;
+        } else {
+            const newSale = Number(value);
+            if (!newSale || newSale <= 0 || newSale >= Number(product.price)) {
+                alert("Sale price original price se kam honi chahiye.");
+                return;
+            }
+            product.salePrice = newSale;
+        }
+
+        if (!await saveProducts()) {
+            if (oldSale === undefined) delete product.salePrice;
+            else product.salePrice = oldSale;
+        }
+        displayProducts();
+        return;
+    }
+
+    if (action === "delete") {
+        if (!confirm("Kya tum ye product delete karna chahte ho?")) return;
+
+        const oldProducts = [...products];
+        products = products.filter(p => String(p.id) !== String(id));
+
+        if (!await saveProducts()) products = oldProducts;
+
+        displayProducts();
+        updateDashboard();
+    }
+});
+
+/* LOAD ORDERS */
+async function loadOrders() {
+    try {
+        const response = await fetch("/orders.json");
+        if (!response.ok) throw new Error("Orders load failed");
+
+        orders = await response.json();
+        if (!Array.isArray(orders)) orders = [];
+
+        displayOrders();
+        displayCustomers();
+        updateDashboard();
+    } catch (error) {
+        console.error(error);
+        $("orders-list").innerHTML = '<div class="empty">Orders load nahi ho sake.</div>';
+    }
+}
+
+/* DISPLAY ORDERS */
+function displayOrders() {
+    const list = $("orders-list");
+    const recent = $("recent-orders");
+
+    list.innerHTML = "";
+    recent.innerHTML = "";
+
+    if (!orders.length) {
+        list.innerHTML = '<div class="empty">Abhi koi order nahi mila.</div>';
+        recent.innerHTML = '<div class="empty">No recent orders.</div>';
+        return;
+    }
+
+    [...orders].reverse().forEach((order, index) => {
+        const customer = order.customer || {};
+        const items = Array.isArray(order.items) ? order.items : [];
+        const status = order.status || "Pending";
+
+        const productDetails = items.map(item =>
+            `${escapeHTML(item.name)} (${escapeHTML(item.size || "-")}) × ${Number(item.quantity || 0)}`
+        ).join(", ");
+
+        const div = document.createElement("div");
+        div.className = "order-card";
+        div.innerHTML = `
+            <h3>Order #${escapeHTML(order.id)}</h3>
+            <p><strong>Customer:</strong> ${escapeHTML(customer.name)}</p>
+            <p><strong>Phone:</strong> ${escapeHTML(customer.phone)}</p>
+            <p><strong>Address:</strong> ${escapeHTML(customer.houseNo || "")} ${escapeHTML(customer.address)}, ${escapeHTML(customer.city)}</p>
+            <p><strong>Products:</strong> ${productDetails}</p>
+            <p><strong>Total:</strong> Rs. ${Number(order.total || 0).toLocaleString("en-PK")}</p>
+            <p><strong>Status:</strong> ${escapeHTML(status)}</p>
+            <button class="whatsapp" data-order-whatsapp="${escapeHTML(order.id)}">Send WhatsApp Order</button>
+            <div style="max-width:250px;margin-top:12px">
+                <label>Update Order Status</label>
+                <select data-order-status="${escapeHTML(order.id)}">
+                    ${["Pending","Confirmed","Shipped","Delivered"].map(s =>
+                        `<option value="${s}" ${status === s ? "selected" : ""}>${s}</option>`
+                    ).join("")}
+                </select>
             </div>
         `;
 
         list.appendChild(div);
 
+        if (index < 5) {
+            const small = document.createElement("div");
+            small.className = "order-card";
+            small.innerHTML = `<strong>#${escapeHTML(order.id)}</strong> — ${escapeHTML(customer.name)} — Rs. ${Number(order.total || 0).toLocaleString("en-PK")}<p>Status: ${escapeHTML(status)}</p>`;
+            recent.appendChild(small);
+        }
     });
 
-    document.getElementById("product-count").textContent = products.length;
+    $("order-count").textContent = orders.length;
 }
 
+/* ORDER STATUS */
+$("orders-list").addEventListener("change", async event => {
+    const select = event.target.closest("select[data-order-status]");
+    if (!select) return;
 
-/* SEND ORDER ON WHATSAPP */
+    const id = select.dataset.orderStatus;
+    const status = select.value;
 
+    try {
+        const response = await fetch(`/api/orders/${encodeURIComponent(id)}/status`, {
+            method: "PATCH",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({status})
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            alert("Order status update nahi hua.");
+        } else {
+            alert("Order status update ho gaya!");
+        }
+
+        await loadOrders();
+    } catch (error) {
+        console.error(error);
+        alert("Server se connection nahi ho saka.");
+        loadOrders();
+    }
+});
+
+/* WHATSAPP */
 function sendWhatsAppOrder(id) {
-
     const order = orders.find(item => String(item.id) === String(id));
+    if (!order) return alert("Order nahi mila.");
 
-    if (!order) {
-        alert("Order nahi mila.");
-        return;
-    }
+    let phone = String(order.customer?.phone || "").replace(/\D/g, "");
 
-    let phone = String(order.customer.phone).replace(/\D/g, "");
-
-    // Pakistan number ko international format mein convert karo
-    if (phone.startsWith("0")) {
-        phone = "92" + phone.substring(1);
-    } else if (phone.startsWith("3")) {
-        phone = "92" + phone;
-    }
+    if (phone.startsWith("0")) phone = "92" + phone.substring(1);
+    else if (phone.startsWith("3")) phone = "92" + phone;
 
     if (!phone.startsWith("92") || phone.length !== 12) {
         alert("Customer ka WhatsApp number check karo.");
         return;
     }
 
-    const productDetails = order.items.map(item => {
+    const details = (order.items || []).map(item =>
+        `${item.name} | Size: ${item.size} | Quantity: ${item.quantity} | Rs. ${item.price * item.quantity}`
+    ).join("\n");
 
-        return `${item.name} | Size: ${item.size} | Quantity: ${item.quantity} | Rs. ${item.price * item.quantity}`;
+    const message = `Assalam o Alaikum ${order.customer.name}!\n\nTY STYLE se aapka order receive ho gaya hai.\nOrder ID: ${order.id}\n\n${details}\n\nTotal: Rs. ${order.total}\n\nDelivery Address: ${order.customer.address}, ${order.customer.city}\n\nThank you!\nTY STYLE`;
 
-    }).join("\n");
-
-    const message = `
-Assalam o Alaikum ${order.customer.name}!
-
-TY STYLE se aapka order receive ho gaya hai.
-
-Order ID: ${order.id}
-
-Order Details:
-${productDetails}
-
-Total Amount: Rs. ${order.total}
-
-Delivery Address:
-${order.customer.houseNo || ""}
-${order.customer.address},
-${order.customer.city},
-${order.customer.province}
-
-Agar aap apna order confirm karna chahte hain to is message ka reply CONFIRM karein.
-
-Thank you!
-TY STYLE
-    `;
-
-    const whatsappURL =
-        `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-
-    window.open(whatsappURL, "_blank");
-
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
 }
 
+$("orders-list").addEventListener("click", event => {
+    const button = event.target.closest("[data-order-whatsapp]");
+    if (button) sendWhatsAppOrder(button.dataset.orderWhatsapp);
+});
 
-/* UPDATE ORDER STATUS */
+/* CUSTOMERS */
+function displayCustomers() {
+    const list = $("customers-list");
+    const customers = new Map();
 
-async function updateOrderStatus(id, status) {
+    orders.forEach(order => {
+        const customer = order.customer || {};
+        const key = customer.phone || customer.name || "Unknown";
+
+        if (!customers.has(key)) {
+            customers.set(key, {...customer, orderCount:0});
+        }
+        customers.get(key).orderCount++;
+    });
+
+    list.innerHTML = "";
+
+    if (!customers.size) {
+        list.innerHTML = '<div class="empty">Abhi customers nahi hain.</div>';
+        return;
+    }
+
+    customers.forEach(customer => {
+        const div = document.createElement("div");
+        div.className = "order-card";
+        div.innerHTML = `
+            <h3>${escapeHTML(customer.name)}</h3>
+            <p>Phone: ${escapeHTML(customer.phone)}</p>
+            <p>City: ${escapeHTML(customer.city)}</p>
+            <p>Total Orders: ${customer.orderCount}</p>
+        `;
+        list.appendChild(div);
+    });
+
+    $("customer-count").textContent = customers.size;
+}
+
+/* REVIEWS */
+async function loadReviews() {
+    const list = $("reviews-list");
+    list.innerHTML = '<div class="empty">Reviews load ho rahe hain...</div>';
 
     try {
+        const results = await Promise.all(
+            products.map(async product => {
+                const response = await fetch(`/api/reviews/${encodeURIComponent(product.id)}`);
+                if (!response.ok) return [];
 
-        const response = await fetch(`/api/orders/${id}/status`, {
+                const result = await response.json();
+                const items = Array.isArray(result.reviews) ? result.reviews : [];
 
-            method: "PATCH",
+                return items.map(review => ({
+                    ...review,
+                    productName: product.name
+                }));
+            })
+        );
 
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({ status: status })
-
-        });
-
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-
-            alert("Order status update nahi hua.");
-
-            loadOrders();
-
-            return;
-        }
-
-        alert("Order status successfully update ho gaya!");
-
-        loadOrders();
-
+        reviews = results.flat();
+        displayReviews();
     } catch (error) {
-
         console.error(error);
-
-        alert("Server se connection nahi ho saka.");
-
+        list.innerHTML = '<div class="empty">Reviews load nahi ho sake.</div>';
     }
 }
 
+function displayReviews() {
+    const list = $("reviews-list");
+    list.innerHTML = "";
 
-/* LOAD CUSTOMER ORDERS */
-
-async function loadOrders() {
-
-    try {
-
-        const response = await fetch("/orders.json");
-
-        if (!response.ok) {
-            throw new Error("Orders load nahi hue");
-        }
-
-        orders = await response.json();
-
-        const list = document.getElementById("orders-list");
-
-        list.innerHTML = "";
-
-        let sales = 0;
-
-        orders.forEach(order => {
-
-            sales += Number(order.total);
-
-            const div = document.createElement("div");
-
-            div.className = "order";
-
-            const currentStatus = order.status || "Pending";
-
-            div.innerHTML = `
-
-                <h3>Order #${order.id}</h3>
-
-                <p>
-                    <strong>Customer:</strong>
-                    ${order.customer.name}
-                </p>
-
-                <p>
-                    <strong>Phone:</strong>
-                    ${order.customer.phone}
-                </p>
-
-                <p>
-                    <strong>Address:</strong>
-                    ${order.customer.address}
-                </p>
-
-                <p>
-                    <strong>City:</strong>
-                    ${order.customer.city}
-                </p>
-
-                <p>
-                    <strong>Product:</strong>
-                    ${order.items.map(item =>
-                        `${item.name} (${item.size}) × ${item.quantity}`
-                    ).join(", ")}
-                </p>
-
-                <p>
-                    <strong>Total:</strong>
-                    Rs. ${order.total}
-                </p>
-
-                <p>
-                    <strong>Order Status:</strong>
-                    ${currentStatus}
-                </p>
-
-                <button
-                    class="whatsapp-btn"
-                    onclick="sendWhatsAppOrder(${order.id})"
-                >
-                    Send WhatsApp Order
-                </button>
-
-                <br>
-
-                <select class="status-select"
-                    onchange="updateOrderStatus(${order.id}, this.value)">
-
-                    <option value="Pending" ${currentStatus === "Pending" ? "selected" : ""}>
-                        Pending
-                    </option>
-
-                    <option value="Confirmed" ${currentStatus === "Confirmed" ? "selected" : ""}>
-                        Confirmed
-                    </option>
-
-                    <option value="Shipped" ${currentStatus === "Shipped" ? "selected" : ""}>
-                        Shipped
-                    </option>
-
-                    <option value="Delivered" ${currentStatus === "Delivered" ? "selected" : ""}>
-                        Delivered
-                    </option>
-
-                </select>
-
-            `;
-
-            list.appendChild(div);
-
-        });
-
-        document.getElementById("order-count").textContent = orders.length;
-
-        document.getElementById("total-sales").textContent = "Rs. " + sales;
-
-    } catch (error) {
-
-        console.error("Orders load error:", error);
-
+    if (!reviews.length) {
+        list.innerHTML = '<div class="empty">Abhi koi customer review nahi hai.</div>';
+        return;
     }
+
+    reviews.forEach(review => {
+        const div = document.createElement("div");
+        div.className = "review-card";
+        div.innerHTML = `
+            <h3>${escapeHTML(review.productName)}</h3>
+            <p><strong>${escapeHTML(review.name)}</strong></p>
+            <div class="review-stars">${"★".repeat(Number(review.rating) || 0)}${"☆".repeat(5-(Number(review.rating)||0))}</div>
+            <p>${escapeHTML(review.comment)}</p>
+            <p class="muted">${review.date ? new Date(review.date).toLocaleString() : ""}</p>
+        `;
+        list.appendChild(div);
+    });
 }
 
+/* DASHBOARD */
+function updateDashboard() {
+    $("product-count").textContent = products.length;
+    $("order-count").textContent = orders.length;
+
+    const sales = orders.reduce((sum, order) => sum + Number(order.total || 0), 0);
+    $("total-sales").textContent = "Rs. " + sales.toLocaleString("en-PK");
+}
 
 /* START */
+async function startAdmin() {
+    await Promise.all([loadProducts(), loadOrders()]);
+    await loadReviews();
+}
 
-loadProducts();
-loadOrders();
-
+startAdmin();
 </script>
-
 </body>
 </html>
