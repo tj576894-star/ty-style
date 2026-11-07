@@ -130,7 +130,18 @@ button:hover{opacity:.85}
         <h1>Customer Orders</h1>
         <p>Har order ki details aur status yahan manage karo.</p>
     </div>
+    <div class="section">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+        <button class="primary order-filter" data-status="All">All Orders</button>
+        <button class="grey order-filter" data-status="Pending">Pending</button>
+        <button class="grey order-filter" data-status="Confirmed">Confirmed</button>
+        <button class="grey order-filter" data-status="Shipped">Shipped</button>
+        <button class="grey order-filter" data-status="Delivered">Delivered</button>
+        <button class="grey order-filter" data-status="Cancelled">Cancelled</button>
+    </div>
+
     <div id="orders-list"></div>
+</div>
 </section>
 
 <!-- PRODUCTS -->
@@ -503,20 +514,28 @@ async function loadOrders() {
 }
 
 /* DISPLAY ORDERS */
+let selectedOrderStatus = "All";
+
 function displayOrders() {
+
     const list = $("orders-list");
     const recent = $("recent-orders");
 
     list.innerHTML = "";
     recent.innerHTML = "";
 
-    if (!orders.length) {
-        list.innerHTML = '<div class="empty">Abhi koi order nahi mila.</div>';
-        recent.innerHTML = '<div class="empty">No recent orders.</div>';
-        return;
+    const filteredOrders = selectedOrderStatus === "All"
+        ? [...orders]
+        : orders.filter(order =>
+            (order.status || "Pending") === selectedOrderStatus
+        );
+
+    if (!filteredOrders.length) {
+        list.innerHTML = '<div class="empty">Is status ka koi order nahi hai.</div>';
     }
 
-    [...orders].reverse().forEach((order, index) => {
+    [...filteredOrders].reverse().forEach(order => {
+
         const customer = order.customer || {};
         const items = Array.isArray(order.items) ? order.items : [];
         const status = order.status || "Pending";
@@ -527,19 +546,26 @@ function displayOrders() {
 
         const div = document.createElement("div");
         div.className = "order-card";
+
         div.innerHTML = `
             <h3>Order #${escapeHTML(order.id)}</h3>
+
             <p><strong>Customer:</strong> ${escapeHTML(customer.name)}</p>
             <p><strong>Phone:</strong> ${escapeHTML(customer.phone)}</p>
             <p><strong>Address:</strong> ${escapeHTML(customer.houseNo || "")} ${escapeHTML(customer.address)}, ${escapeHTML(customer.city)}</p>
             <p><strong>Products:</strong> ${productDetails}</p>
             <p><strong>Total:</strong> Rs. ${Number(order.total || 0).toLocaleString("en-PK")}</p>
             <p><strong>Status:</strong> ${escapeHTML(status)}</p>
-            <button class="whatsapp" data-order-whatsapp="${escapeHTML(order.id)}">Send WhatsApp Order</button>
+
+            <button class="whatsapp" data-order-whatsapp="${escapeHTML(order.id)}">
+                Send WhatsApp Order
+            </button>
+
             <div style="max-width:250px;margin-top:12px">
                 <label>Update Order Status</label>
+
                 <select data-order-status="${escapeHTML(order.id)}">
-                    ${["Pending","Confirmed","Shipped","Delivered"].map(s =>
+                    ${["Pending","Confirmed","Shipped","Delivered","Cancelled"].map(s =>
                         `<option value="${s}" ${status === s ? "selected" : ""}>${s}</option>`
                     ).join("")}
                 </select>
@@ -547,115 +573,32 @@ function displayOrders() {
         `;
 
         list.appendChild(div);
-
-        if (index < 5) {
-            const small = document.createElement("div");
-            small.className = "order-card";
-            small.innerHTML = `<strong>#${escapeHTML(order.id)}</strong> — ${escapeHTML(customer.name)} — Rs. ${Number(order.total || 0).toLocaleString("en-PK")}<p>Status: ${escapeHTML(status)}</p>`;
-            recent.appendChild(small);
-        }
     });
 
-    $("order-count").textContent = orders.length;
-}
+    // Dashboard ke recent orders
+    [...orders].slice(-5).reverse().forEach(order => {
+        const small = document.createElement("div");
+        small.className = "order-card";
 
-/* ORDER STATUS */
-$("orders-list").addEventListener("change", async event => {
-    const select = event.target.closest("select[data-order-status]");
-    if (!select) return;
-
-    const id = select.dataset.orderStatus;
-    const status = select.value;
-
-    try {
-        const response = await fetch(`/api/orders/${encodeURIComponent(id)}/status`, {
-            method: "PATCH",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({status})
-        });
-
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-            alert("Order status update nahi hua.");
-        } else {
-            alert("Order status update ho gaya!");
-        }
-
-        await loadOrders();
-    } catch (error) {
-        console.error(error);
-        alert("Server se connection nahi ho saka.");
-        loadOrders();
-    }
-});
-
-/* WHATSAPP */
-function sendWhatsAppOrder(id) {
-    const order = orders.find(item => String(item.id) === String(id));
-    if (!order) return alert("Order nahi mila.");
-
-    let phone = String(order.customer?.phone || "").replace(/\D/g, "");
-
-    if (phone.startsWith("0")) phone = "92" + phone.substring(1);
-    else if (phone.startsWith("3")) phone = "92" + phone;
-
-    if (!phone.startsWith("92") || phone.length !== 12) {
-        alert("Customer ka WhatsApp number check karo.");
-        return;
-    }
-
-    const details = (order.items || []).map(item =>
-        `${item.name} | Size: ${item.size} | Quantity: ${item.quantity} | Rs. ${item.price * item.quantity}`
-    ).join("\n");
-
-    const message = `Assalam o Alaikum ${order.customer.name}!\n\nTY STYLE se aapka order receive ho gaya hai.\nOrder ID: ${order.id}\n\n${details}\n\nTotal: Rs. ${order.total}\n\nDelivery Address: ${order.customer.address}, ${order.customer.city}\n\nThank you!\nTY STYLE`;
-
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
-}
-
-$("orders-list").addEventListener("click", event => {
-    const button = event.target.closest("[data-order-whatsapp]");
-    if (button) sendWhatsAppOrder(button.dataset.orderWhatsapp);
-});
-
-/* CUSTOMERS */
-function displayCustomers() {
-    const list = $("customers-list");
-    const customers = new Map();
-
-    orders.forEach(order => {
-        const customer = order.customer || {};
-        const key = customer.phone || customer.name || "Unknown";
-
-        if (!customers.has(key)) {
-            customers.set(key, {...customer, orderCount:0});
-        }
-        customers.get(key).orderCount++;
-    });
-
-    list.innerHTML = "";
-
-    if (!customers.size) {
-        list.innerHTML = '<div class="empty">Abhi customers nahi hain.</div>';
-        return;
-    }
-
-    customers.forEach(customer => {
-        const div = document.createElement("div");
-        div.className = "order-card";
-        div.innerHTML = `
-            <h3>${escapeHTML(customer.name)}</h3>
-            <p>Phone: ${escapeHTML(customer.phone)}</p>
-            <p>City: ${escapeHTML(customer.city)}</p>
-            <p>Total Orders: ${customer.orderCount}</p>
+        small.innerHTML = `
+            <strong>#${escapeHTML(order.id)}</strong>
+            — ${escapeHTML(order.customer?.name)}
+            — Rs. ${Number(order.total || 0).toLocaleString("en-PK")}
+            <p>Status: ${escapeHTML(order.status || "Pending")}</p>
         `;
-        list.appendChild(div);
+
+        recent.appendChild(small);
     });
 
-    $("customer-count").textContent = customers.size;
-}
+    // Active filter button
+    document.querySelectorAll(".order-filter").forEach(button => {
+        const active = button.dataset.status === selectedOrderStatus;
 
+        button.className = active
+            ? "primary order-filter"
+            : "grey order-filter";
+    });
+}
 /* REVIEWS */
 async function loadReviews() {
     const list = $("reviews-list");
