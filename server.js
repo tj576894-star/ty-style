@@ -1,4 +1,3 @@
-
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
@@ -193,7 +192,8 @@ app.patch("/api/orders/:id/status", (req, res) => {
         "Pending",
         "Confirmed",
         "Shipped",
-        "Delivered"
+        "Delivered",
+        "Cancelled"
     ];
 
     if (!allowedStatuses.includes(req.body.status)) {
