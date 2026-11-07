@@ -7,229 +7,1268 @@
 
     <title>Product Details | TY STYLE</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        .product-detail {
-            max-width: 1100px;
-            margin: 50px auto;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: #fff;
+            color: #171717;
+        }
+
+        button {
+            font: inherit;
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* HEADER */
+
+        .top-header {
+            height: 78px;
+            padding: 0 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+
+        .brand {
+            font-size: 27px;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+        }
+
+        .back-link {
+            font-size: 11px;
+            font-weight: 700;
+            color: #555;
+        }
+
+        /* MAIN PRODUCT */
+
+        .product-main {
+            max-width: 1250px;
+            margin: 55px auto;
+            padding: 0 35px;
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 65px;
+        }
+
+        /* IMAGE */
+
+        .gallery {
+            min-width: 0;
+        }
+
+        .main-image-box {
+            position: relative;
+            background: #f2f2f2;
+            overflow: hidden;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 610px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .sale-label {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #171717;
+            color: white;
+            padding: 10px 16px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .gallery-caption {
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* PRODUCT INFO */
+
+        .product-info {
+            padding-top: 12px;
+        }
+
+        .product-category {
+            color: #888;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .product-title {
+            font-size: clamp(25px, 3vw, 38px);
+            line-height: 1.25;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            margin: 17px 0 13px;
+        }
+
+        .review-link {
+            font-size: 11px;
+            color: #555;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .stars {
+            color: #171717;
+            letter-spacing: 2px;
+            margin-right: 7px;
+        }
+
+        /* PRICE */
+
+        .price-area {
+            margin: 30px 0;
+            padding: 22px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .regular-label {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .sale-price {
+            font-size: 29px;
+            font-weight: 900;
+        }
+
+        .old-price {
+            color: #999;
+            font-size: 15px;
+            text-decoration: line-through;
+        }
+
+        .discount {
+            background: #eeeeee;
+            padding: 7px 10px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .saving {
+            color: #666;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+
+        .availability {
+            margin-top: 15px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .availability span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #222;
+            border-radius: 50%;
+            margin-right: 7px;
+        }
+
+        /* SIZE SELECTOR */
+
+        .option-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 0 13px;
+        }
+
+        .option-heading strong {
+            font-size: 12px;
+        }
+
+        .size-guide {
+            font-size: 10px;
+            color: #777;
+            text-decoration: underline;
+        }
+
+        .size-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .size-box {
+            width: 53px;
+            height: 48px;
+            background: white;
+            border: 1px solid #ddd;
+            color: #171717;
+            font-size: 12px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .size-box:hover,
+        .size-box.selected {
+            background: #171717;
+            border-color: #171717;
+            color: white;
+        }
+
+        .size-box:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        /* QUANTITY */
+
+        .quantity-area {
+            margin-top: 27px;
+        }
+
+        .quantity-area strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .quantity-control {
+            width: 145px;
+            height: 48px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quantity-control button {
+            width: 42px;
+            height: 100%;
+            border: none;
+            background: white;
+            font-size: 20px;
+        }
+
+        .quantity-control span {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* BUTTONS */
+
+        .action-buttons {
+            margin-top: 25px;
+            display: grid;
+            gap: 11px;
+        }
+
+        .buy-button {
+            height: 57px;
+            background: #171717;
+            color: white;
+            border: 1px solid #171717;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        .buy-button:hover {
+            background: #444;
+        }
+
+        .cart-button {
+            height: 57px;
+            background: white;
+            color: #171717;
+            border: 1px solid #171717;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        .cart-button:hover {
+            background: #eee;
+        }
+
+        .enquiry-button {
+            margin-top: 15px;
+            width: 100%;
+            height: 43px;
+            background: #f4f4f4;
+            border: none;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        /* TRUST INFO */
+
+        .trust-info {
+            margin-top: 25px;
             padding: 20px;
+            background: #f6f6f6;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            gap: 18px;
         }
 
-        .detail-image {
-            width: 100%;
-            max-height: 600px;
-            object-fit: cover;
-            border-radius: 12px;
+        .trust-item {
+            font-size: 10px;
+            color: #555;
+            line-height: 1.7;
         }
 
-        .detail-info h1 {
-            margin: 15px 0;
-        }
-
-        .detail-price {
-            font-size: 25px;
-            font-weight: 700;
-            margin: 20px 0;
-        }
-
-        .detail-info select,
-        .detail-info input {
+        .trust-item strong {
             display: block;
-            width: 100%;
-            padding: 13px;
-            margin: 12px 0;
+            color: #171717;
+            margin-bottom: 3px;
         }
 
-        .detail-info button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 12px;
+        /* DESCRIPTION */
+
+        .description-section {
+            max-width: 1180px;
+            margin: 75px auto;
+            padding: 0 35px;
+        }
+
+        .section-heading {
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 25px;
+        }
+
+        .description-text {
+            max-width: 850px;
+            color: #666;
+            font-size: 13px;
+            line-height: 2;
+        }
+
+        .description-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .description-card {
+            padding: 23px;
+            background: #f5f5f5;
+        }
+
+        .description-card strong {
+            font-size: 11px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .description-card p {
+            color: #777;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        /* RELATED PRODUCTS */
+
+        .related-section {
+            background: #f7f7f7;
+            padding: 75px 7%;
+        }
+
+        .related-heading {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .related-heading p {
+            color: #888;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .related-heading h2 {
+            font-size: 30px;
+            font-weight: 900;
+        }
+
+        .related-grid {
+            max-width: 1150px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .related-card {
+            background: white;
             cursor: pointer;
-            border: none;
-            background: black;
-            color: white;
-            font-weight: bold;
+            transition: 0.3s;
         }
 
-        .detail-description {
+        .related-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .related-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .related-info {
+            padding: 15px;
+        }
+
+        .related-info p {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .related-info h3 {
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .related-info strong {
+            font-size: 14px;
+        }
+
+        /* REVIEWS */
+
+        .reviews-section {
             max-width: 1100px;
-            margin: 30px auto;
-            padding: 20px;
+            margin: 80px auto;
+            padding: 0 30px;
         }
 
-        @media(max-width: 700px) {
-            .product-detail {
-                grid-template-columns: 1fr;
-                margin: 20px auto;
+        .reviews-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+        }
+
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .rating-number {
+            font-size: 45px;
+            font-weight: 900;
+        }
+
+        .rating-summary p {
+            font-size: 11px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .write-review {
+            padding: 14px 22px;
+            background: #171717;
+            color: white;
+            border: none;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .rating-bars {
+            max-width: 450px;
+            margin-bottom: 35px;
+        }
+
+        .rating-bar {
+            display: grid;
+            grid-template-columns: 45px 1fr 30px;
+            gap: 12px;
+            align-items: center;
+            margin: 12px 0;
+            font-size: 10px;
+        }
+
+        .bar-bg {
+            height: 7px;
+            background: #eee;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: #171717;
+        }
+
+        .review-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .review-card {
+            padding: 22px;
+            border: 1px solid #eee;
+            background: white;
+        }
+
+        .review-card h4 {
+            font-size: 12px;
+            margin: 10px 0;
+        }
+
+        .review-card p {
+            color: #666;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .review-card .stars {
+            font-size: 11px;
+        }
+
+        .demo-note {
+            color: #999;
+            font-size: 10px;
+            margin-top: 22px;
+        }
+
+        /* FOOTER */
+
+        .product-footer {
+            background: #171717;
+            color: white;
+            padding: 35px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .product-footer strong {
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .product-footer p {
+            color: #aaa;
+            font-size: 10px;
+        }
+
+        /* NOTIFICATION */
+
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #171717;
+            color: white;
+            padding: 16px 23px;
+            font-size: 11px;
+            z-index: 999;
+            opacity: 0;
+            transform: translateY(15px);
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 850px) {
+
+            .product-main {
+                gap: 30px;
             }
+
+            .main-image {
+                height: 500px;
+            }
+
+            .related-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media(max-width: 600px) {
+
+            .top-header {
+                height: 65px;
+                padding: 0 5%;
+            }
+
+            .brand {
+                font-size: 22px;
+            }
+
+            .product-main {
+                grid-template-columns: 1fr;
+                margin: 25px auto;
+                padding: 0 16px;
+                gap: 20px;
+            }
+
+            .main-image {
+                height: 440px;
+            }
+
+            .product-info {
+                padding: 10px 3px;
+            }
+
+            .product-title {
+                font-size: 28px;
+            }
+
+            .sale-price {
+                font-size: 25px;
+            }
+
+            .description-section {
+                margin: 50px auto;
+                padding: 0 18px;
+            }
+
+            .description-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .related-section {
+                padding: 55px 15px;
+            }
+
+            .related-grid {
+                gap: 12px;
+            }
+
+            .related-card img {
+                height: 220px;
+            }
+
+            .reviews-section {
+                padding: 0 18px;
+                margin: 55px auto;
+            }
+
+            .review-list {
+                grid-template-columns: 1fr;
+            }
+
+            .product-footer {
+                flex-direction: column;
+                text-align: center;
+            }
+
         }
     </style>
 </head>
 
 <body>
 
-    <div id="product-details">
-        Loading product...
-    </div>
+    <header class="top-header">
+        <a href="index.html" class="brand">TY STYLE.</a>
+        <a href="index.html" class="back-link">← CONTINUE SHOPPING</a>
+    </header>
+
+    <main id="product-details">
+        <p style="padding:80px;text-align:center;">LOADING PRODUCT...</p>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <footer class="product-footer">
+        <strong>TY STYLE.</strong>
+        <p>PREMIUM STREETWEAR · STYLE YOUR WAY</p>
+    </footer>
 
     <script>
+
+        let allProducts = [];
         let currentProduct = null;
+        let selectedSize = "";
+        let quantity = 1;
+
+        const params = new URLSearchParams(window.location.search);
+        const productId = Number(params.get("id"));
+
+        function safeText(value) {
+            return String(value ?? "").replace(/[&<>"']/g, char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            })[char]);
+        }
+
+        function money(value) {
+            return Number(value || 0).toLocaleString("en-PK");
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.classList.add("show");
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2500);
+        }
 
         async function loadProduct() {
-
-            const params = new URLSearchParams(window.location.search);
-            const productId = Number(params.get("id"));
 
             try {
 
                 const response = await fetch("/api/products");
-                const products = await response.json();
 
-                currentProduct = products.find(
-                    product => Number(product.id) === productId
+                if (!response.ok) {
+                    throw new Error("Products load nahi huay");
+                }
+
+                allProducts = await response.json();
+
+                currentProduct = allProducts.find(product =>
+                    Number(product.id) === productId
                 );
 
                 if (!currentProduct) {
                     document.getElementById("product-details").innerHTML =
-                        "<h2>Product not found!</h2>";
+                        "<h2 style='padding:80px;text-align:center'>Product not found!</h2>";
                     return;
                 }
 
-                showProduct();
+                document.title = currentProduct.name + " | TY STYLE";
+
+                renderProduct();
 
             } catch (error) {
 
+                console.error(error);
+
                 document.getElementById("product-details").innerHTML =
-                    "<h2>Unable to load product.</h2>";
+                    "<p style='padding:80px;text-align:center'>Unable to load product. Please refresh.</p>";
 
             }
         }
 
-        function showProduct() {
+        function renderProduct() {
 
-            const product = currentProduct;
+            const p = currentProduct;
 
-            const sizes = Array.isArray(product.sizes)
-                ? product.sizes
-                : [];
+            const sizes = Array.isArray(p.sizes) && p.sizes.length
+                ? p.sizes
+                : ["S", "M", "L", "XL", "XXL"];
+
+            const salePrice = Number(p.price || 0);
+            const regularPrice = Math.round(salePrice * 1.5);
+            const saving = regularPrice - salePrice;
+            const discount = Math.round((saving / regularPrice) * 100);
+
+            const available = p.stock !== false;
+
+            const demoReviews = [
+                ["Faizan S.", "Omg got my parcel its look stunning! Korean style love it 🔥"],
+                ["Nabeel A.", "Quality bohat achi hai. Size fitting bhi perfect hai."],
+                ["Moeez A.", "Finally mil gaya jo design dhoond raha tha. Amazing!"],
+                ["Usama B.", "Your designs never failed me. Absolutely in love with it."],
+                ["Uneeb K.", "Fantastic style and quality. Satisfied! 👏"],
+                ["Shamraiz", "Bohat zabardast design hai. Love it!"],
+                ["Furqan R.", "Great quality material, style and stitching."],
+                ["Aliyaan C.", "Finally got it on sale. So stylish!"],
+                ["Sheroz A.", "Satisfied with my shopping. Thanks!"],
+                ["Mubeen A.", "Bohat achi quality aur fitting hai 😍"],
+                ["Fozan R.", "Unique design hai, pehn kar bohat achi lagi."],
+                ["Saqib Z.", "Looks stylish. Quality bhi excellent hai."],
+                ["Sameer J.", "Always find great quality stuff here."],
+                ["Abdul M.", "Sab kuch amazing hai: fitting, size aur quality 👍"]
+            ];
 
             document.getElementById("product-details").innerHTML = `
 
-                <div class="product-detail">
+                <section class="product-main">
 
-                    <div>
-                        <img
-                            class="detail-image"
-                            src="${product.image || ""}"
-                            alt="${product.name || "Product"}"
-                            onerror="this.src='https://placehold.co/700x900?text=TY+STYLE'"
-                        >
+                    <div class="gallery">
+
+                        <div class="main-image-box">
+
+                            <span class="sale-label">SALE · ${discount}% OFF</span>
+
+                            <img
+                                class="main-image"
+                                src="${safeText(p.image || "")}"
+                                alt="${safeText(p.name)}"
+                                onerror="this.src='https://placehold.co/700x900?text=TY+STYLE'"
+                            >
+
+                        </div>
+
+                        <div class="gallery-caption">
+                            <span>TY STYLE COLLECTION</span>
+                            <span>PREMIUM STREETWEAR</span>
+                        </div>
+
                     </div>
 
-                    <div class="detail-info">
+                    <div class="product-info">
 
-                        <p>${product.category || ""}</p>
-
-                        <h1>${product.name || "Product"}</h1>
-
-                        <p class="detail-price">
-                            Rs. ${Number(product.price || 0).toLocaleString("en-PK")}
+                        <p class="product-category">
+                            ${safeText(p.category || "TY STYLE COLLECTION")}
                         </p>
 
-                        <p>${product.stock ? "In Stock" : "Out of Stock"}</p>
+                        <h1 class="product-title">
+                            ${safeText(p.name)}
+                        </h1>
 
-                        <label>Select Size</label>
+                        <a href="#customer-reviews" class="review-link">
+                            <span class="stars">★★★★★</span>
+                            14 Reviews
+                        </a>
 
-                        <select id="detail-size">
-                            <option value="">Choose Size</option>
-                            ${sizes.map(size =>
-                                `<option value="${size}">${size}</option>`
-                            ).join("")}
-                        </select>
+                        <div class="price-area">
 
-                        <label>Quantity</label>
+                            <p class="regular-label">Regular price</p>
 
-                        <input
-                            type="number"
-                            id="detail-quantity"
-                            value="1"
-                            min="1"
-                        >
+                            <div class="price-row">
 
-                        <button onclick="detailBuyNow()">
-                            BUY NOW
+                                <span class="sale-price">
+                                    Rs.${money(salePrice)}
+                                </span>
+
+                                <span class="old-price">
+                                    Rs.${money(regularPrice)}
+                                </span>
+
+                                <span class="discount">
+                                    ${discount}% OFF
+                                </span>
+
+                            </div>
+
+                            <p class="saving">
+                                Save Rs.${money(saving)}
+                            </p>
+
+                            <p class="availability">
+                                <span style="background:${available ? '#222' : '#999'}"></span>
+                                ${available ? "Available" : "Unavailable"}
+                            </p>
+
+                        </div>
+
+                        <div class="option-heading">
+                            <strong>Size:</strong>
+                            <a href="#size-guide" class="size-guide">Size Guide</a>
+                        </div>
+
+                        <div class="size-options">
+
+                            ${sizes.map(size => `
+                                <button
+                                    class="size-box"
+                                    onclick="selectSize(this, '${safeText(size)}')"
+                                >
+                                    ${safeText(size)}
+                                </button>
+                            `).join("")}
+
+                        </div>
+
+                        <div class="quantity-area">
+
+                            <strong>Quantity</strong>
+
+                            <div class="quantity-control">
+
+                                <button onclick="changeQuantity(-1)">−</button>
+
+                                <span id="quantity-value">1</span>
+
+                                <button onclick="changeQuantity(1)">+</button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="action-buttons">
+
+                            <button
+                                class="buy-button"
+                                onclick="buyProduct()"
+                                ${available ? "" : "disabled"}
+                            >
+                                BUY IT NOW
+                            </button>
+
+                            <button
+                                class="cart-button"
+                                onclick="addProductToCart()"
+                                ${available ? "" : "disabled"}
+                            >
+                                ADD TO CART
+                            </button>
+
+                        </div>
+
+                        <button class="enquiry-button" onclick="sendEnquiry()">
+                            PRODUCT ENQUIRY
                         </button>
 
-                        <button onclick="detailAddToCart()">
-                            ADD TO CART
+                        <div class="trust-info">
+
+                            <div class="trust-item">
+                                <strong>QUALITY FIRST</strong>
+                                Carefully selected fashion essentials.
+                            </div>
+
+                            <div class="trust-item">
+                                <strong>SECURE ORDER</strong>
+                                Easy ordering through TY STYLE.
+                            </div>
+
+                            <div class="trust-item">
+                                <strong>SIZE OPTIONS</strong>
+                                Multiple sizes available.
+                            </div>
+
+                            <div class="trust-item">
+                                <strong>STREETWEAR STYLE</strong>
+                                Upgrade your everyday look.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <section class="description-section">
+
+                    <p class="product-category">DETAILS THAT MATTER</p>
+
+                    <h2 class="section-heading">PRODUCT DESCRIPTION</h2>
+
+                    <p class="description-text">
+                        Upgrade your everyday look with this
+                        ${safeText(p.name)} from TY STYLE.
+                        Designed for a stylish and comfortable
+                        everyday outfit. Pair it with your favourite
+                        jeans, trousers or other streetwear essentials.
+                    </p>
+
+                    <div class="description-grid">
+
+                        <div class="description-card">
+                            <strong>FABRIC & QUALITY</strong>
+                            <p>Comfortable fabric with a stylish finish and everyday wear feel.</p>
+                        </div>
+
+                        <div class="description-card">
+                            <strong>FIT & STYLE</strong>
+                            <p>Modern streetwear look designed to complement your wardrobe.</p>
+                        </div>
+
+                        <div class="description-card">
+                            <strong>WASH CARE</strong>
+                            <p>Follow the wash care label. Prefer gentle washing for better fabric life.</p>
+                        </div>
+
+                        <div class="description-card">
+                            <strong>COMFORT</strong>
+                            <p>Made for easy styling and comfortable everyday use.</p>
+                        </div>
+
+                        <div class="description-card">
+                            <strong>SIZE</strong>
+                            <p>Choose your preferred size before placing your order.</p>
+                        </div>
+
+                        <div class="description-card" id="size-guide">
+                            <strong>COLOUR NOTE</strong>
+                            <p>Actual product colour may vary slightly due to lighting and screen settings.</p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <section class="related-section">
+
+                    <div class="related-heading">
+                        <p>COMPLETE YOUR LOOK</p>
+                        <h2>RELATED PRODUCTS</h2>
+                    </div>
+
+                    <div class="related-grid" id="related-grid"></div>
+
+                </section>
+
+                <section class="reviews-section" id="customer-reviews">
+
+                    <p class="product-category">CUSTOMER FEEDBACK</p>
+
+                    <h2 class="section-heading">Customer Reviews</h2>
+
+                    <div class="reviews-top">
+
+                        <div class="rating-summary">
+
+                            <div class="rating-number">5.0</div>
+
+                            <div>
+                                <div class="stars">★★★★★</div>
+                                <p>14 reviews</p>
+                            </div>
+
+                        </div>
+
+                        <button
+                            class="write-review"
+                            onclick="writeReview()"
+                        >
+                            WRITE A REVIEW
                         </button>
 
                     </div>
 
-                </div>
+                    <div class="rating-bars">
 
-                <div class="detail-description">
+                        ${[5,4,3,2,1].map(star => `
+                            <div class="rating-bar">
+                                <span>${star} Star</span>
+                                <div class="bar-bg">
+                                    <div
+                                        class="bar-fill"
+                                        style="width:${star === 5 ? 100 : 0}%"
+                                    ></div>
+                                </div>
+                                <span>${star === 5 ? 14 : 0}</span>
+                            </div>
+                        `).join("")}
 
-                    <h2>Product Description</h2>
+                    </div>
 
-                    <p>
-                        Discover ${product.name} at TY STYLE.
-                        Explore our ${product.category} collection
-                        and upgrade your everyday style.
+                    <div class="review-list">
+
+                        ${demoReviews.map(review => `
+                            <article class="review-card">
+                                <div class="stars">★★★★★</div>
+                                <h4>${safeText(review[0])}</h4>
+                                <p>${safeText(review[1])}</p>
+                            </article>
+                        `).join("")}
+
+                    </div>
+
+                    <p class="demo-note">
+                        * Demo reviews and ratings are sample content for website design.
                     </p>
 
-                </div>
+                </section>
 
             `;
+
+            renderRelatedProducts();
+
         }
 
-        function detailBuyNow() {
+        function selectSize(button, size) {
 
-            const size = document.getElementById("detail-size").value;
-            const quantity = Number(
-                document.getElementById("detail-quantity").value
+            document.querySelectorAll(".size-box").forEach(box => {
+                box.classList.remove("selected");
+            });
+
+            button.classList.add("selected");
+            selectedSize = size;
+
+        }
+
+        function changeQuantity(amount) {
+
+            quantity = Math.max(1, quantity + amount);
+
+            document.getElementById("quantity-value").textContent = quantity;
+
+        }
+
+        function validateSelection() {
+
+            if (!selectedSize) {
+                showToast("Please select your size first.");
+                return false;
+            }
+
+            return true;
+
+        }
+
+        function addProductToCart() {
+
+            if (!validateSelection()) return;
+
+            let cart = JSON.parse(localStorage.getItem("tyStyleCart")) || [];
+
+            const existing = cart.find(item =>
+                Number(item.id) === Number(currentProduct.id) &&
+                item.size === selectedSize
             );
 
-            if (currentProduct.sizes?.length && !size) {
-                alert("Please select a size.");
-                return;
+            if (existing) {
+                existing.quantity += quantity;
+            } else {
+                cart.push({
+                    ...currentProduct,
+                    size: selectedSize,
+                    quantity: quantity
+                });
             }
 
-            if (!Number.isInteger(quantity) || quantity < 1) {
-                alert("Please enter a valid quantity.");
-                return;
-            }
+            localStorage.setItem("tyStyleCart", JSON.stringify(cart));
 
-            localStorage.setItem("tyStyleBuyNow", JSON.stringify({
-                ...currentProduct,
-                selectedSize: size,
-                quantity: quantity
-            }));
+            showToast("Product added to your cart!");
 
-            window.location.href = "buy-now.html";
         }
 
-        function detailAddToCart() {
+        function buyProduct() {
 
-            const size = document.getElementById("detail-size").value;
+            if (!validateSelection()) return;
 
-            if (currentProduct.sizes?.length && !size) {
-                alert("Please select a size.");
+            if (currentProduct.stock === false) {
+                showToast("Sorry! This product is unavailable.");
                 return;
             }
 
-            if (typeof addToCart === "function") {
-                addToCart(currentProduct.id);
-            } else {
-                alert("Cart is not connected on this page yet.");
+            const selectedProduct = {
+                ...currentProduct,
+                size: selectedSize,
+                quantity: quantity
+            };
+
+            localStorage.setItem(
+                "tyStyleBuyNow",
+                JSON.stringify(selectedProduct)
+            );
+
+            window.location.href = "buy-now.html";
+
+        }
+
+        function sendEnquiry() {
+
+            const message = `Hello TY STYLE! I want to enquire about ${currentProduct.name}.`;
+
+            window.open(
+                "https://wa.me/?text=" + encodeURIComponent(message),
+                "_blank"
+            );
+
+        }
+
+        function writeReview() {
+
+            showToast("Review submission will be connected soon.");
+
+        }
+
+        function renderRelatedProducts() {
+
+            const related = allProducts
+                .filter(product =>
+                    Number(product.id) !== Number(currentProduct.id)
+                )
+                .slice(0, 4);
+
+            const container = document.getElementById("related-grid");
+
+            if (!related.length) {
+                container.innerHTML = "<p>No related products available.</p>";
+                return;
             }
+
+            container.innerHTML = related.map(product => `
+
+                <article
+                    class="related-card"
+                    onclick="openRelatedProduct(${Number(product.id)})"
+                >
+
+                    <img
+                        src="${safeText(product.image || "")}"
+                        alt="${safeText(product.name)}"
+                        loading="lazy"
+                        onerror="this.src='https://placehold.co/500x600?text=TY+STYLE'"
+                    >
+
+                    <div class="related-info">
+
+                        <p>${safeText(product.category || "COLLECTION")}</p>
+
+                        <h3>${safeText(product.name)}</h3>
+
+                        <strong>Rs.${money(product.price)}</strong>
+
+                    </div>
+
+                </article>
+
+            `).join("");
+
+        }
+
+        function openRelatedProduct(id) {
+
+            window.location.href = `product.html?id=${id}`;
+
         }
 
         loadProduct();
+
     </script>
 
 </body>
