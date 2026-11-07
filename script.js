@@ -46,23 +46,19 @@ async function loadProducts() {
    DISPLAY PRODUCTS
 ========================================= */
 
+
 function displayProducts(productList = products) {
 
     productContainer.innerHTML = "";
 
     if (!productList || productList.length === 0) {
-
-        productContainer.innerHTML =
-            "<p>No products found.</p>";
-
+        productContainer.innerHTML = "<p>No products found.</p>";
         return;
-
     }
 
     productList.forEach(product => {
 
         const card = document.createElement("div");
-
         card.className = "product-card";
 
         const sizes = Array.isArray(product.sizes)
@@ -86,6 +82,8 @@ function displayProducts(productList = products) {
                 src="${escapeHTML(product.image || "")}"
                 alt="${escapeHTML(product.name || "TY STYLE product")}"
                 loading="lazy"
+                onclick="openProduct(${Number(product.id)})"
+                style="cursor:pointer"
                 onerror="this.src='https://placehold.co/700x900?text=TY+STYLE'"
             >
 
@@ -95,7 +93,12 @@ function displayProducts(productList = products) {
                     ${escapeHTML(product.category || "")}
                 </p>
 
-                <h3>${escapeHTML(product.name || "Product")}</h3>
+                <h3
+                    onclick="openProduct(${Number(product.id)})"
+                    style="cursor:pointer"
+                >
+                    ${escapeHTML(product.name || "Product")}
+                </h3>
 
                 <p class="price">
                     Rs. ${Number(product.price || 0).toLocaleString("en-PK")}
@@ -112,12 +115,19 @@ function displayProducts(productList = products) {
                 </button>
 
             </div>
-
         `;
 
         productContainer.appendChild(card);
 
     });
+}
+
+
+/* OPEN PRODUCT DETAILS */
+
+function openProduct(id) {
+
+    window.location.href = `product.html?id=${id}`;
 
 }
 
