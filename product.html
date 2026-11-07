@@ -1066,33 +1066,34 @@
     }
 
     // LOAD REAL REVIEWS
-    async function loadReviews() {
-        const container = document.getElementById("review-list");
+   
+async function loadReviews() {
+    const container = document.getElementById("review-list");
 
-        try {
-            const response = await fetch(
-                `/api/reviews/${encodeURIComponent(currentProduct.id)}`
-            );
+    try {
+        const response = await fetch(
+            `/api/reviews/${encodeURIComponent(currentProduct.id)}`
+        );
 
-            if (!response.ok) {
-                throw new Error("Reviews load nahi huay");
-            }
-
-            productReviews = await response.json();
-
-            if (!Array.isArray(productReviews)) {
-                productReviews = [];
-            }
-
-            renderReviews();
-
-        } catch (error) {
-            console.error("Reviews error:", error);
-
-            container.innerHTML =
-                "<p>Reviews load nahi ho sake. Please refresh.</p>";
+        if (!response.ok) {
+            throw new Error("Reviews load nahi huay");
         }
+
+        const result = await response.json();
+
+        productReviews = Array.isArray(result.reviews)
+            ? result.reviews
+            : [];
+
+        renderReviews();
+
+    } catch (error) {
+        console.error("Reviews error:", error);
+
+        container.innerHTML =
+            "<p>Reviews load nahi ho sake. Please refresh.</p>";
     }
+}
 
     // DISPLAY REAL REVIEWS AND RATINGS
     function renderReviews() {
