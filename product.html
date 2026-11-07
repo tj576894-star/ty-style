@@ -1136,13 +1136,14 @@
 
         }
 
-       function changeQuantity(amount) {
+     function changeQuantity(amount) {
 
     quantity = Math.max(1, quantity + amount);
 
     document.getElementById("quantity-value").textContent = quantity;
 
-    const total = Number(currentProduct.price) * quantity;
+    const price = Number(currentProduct.price);
+    const total = price * quantity;
 
     document.getElementById("quantity-total").textContent =
         "Total: Rs." + money(total);
