@@ -4,7 +4,8 @@
 ========================================= */
 
 let products = [];
-let cart = [];
+
+let cart = JSON.parse(localStorage.getItem("tyStyleCart")) || [];
 
 const productContainer = document.getElementById("product-container");
 const cartItems = document.getElementById("cart-items");
@@ -28,7 +29,9 @@ async function loadProducts() {
 
         products = await response.json();
 
-        displayProducts();
+        if (productContainer) {
+    displayProducts();
+}
 
     } catch (error) {
 
@@ -298,6 +301,11 @@ function escapeHTML(value) {
 
 function updateCart() {
 
+    localStorage.setItem("tyStyleCart", JSON.stringify(cart));
+
+if (!cartItems || !cartTotal || !cartCount) {
+    return;
+}
     cartItems.innerHTML = "";
 
     if (cart.length === 0) {
