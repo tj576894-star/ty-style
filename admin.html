@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,7 +98,6 @@ button:hover{opacity:.85}
 
 <div class="content">
 
-<!-- DASHBOARD -->
 <section class="page active" id="dashboard">
     <div class="page-heading">
         <h1>Dashboard Overview</h1>
@@ -124,27 +122,25 @@ button:hover{opacity:.85}
     </div>
 </section>
 
-<!-- ORDERS -->
 <section class="page" id="orders">
     <div class="page-heading">
         <h1>Customer Orders</h1>
         <p>Har order ki details aur status yahan manage karo.</p>
     </div>
     <div class="section">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
-        <button class="primary order-filter" data-status="All">All Orders</button>
-        <button class="grey order-filter" data-status="Pending">Pending</button>
-        <button class="grey order-filter" data-status="Confirmed">Confirmed</button>
-        <button class="grey order-filter" data-status="Shipped">Shipped</button>
-        <button class="grey order-filter" data-status="Delivered">Delivered</button>
-        <button class="grey order-filter" data-status="Cancelled">Cancelled</button>
-    </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+            <button class="primary order-filter" data-status="All">All Orders</button>
+            <button class="grey order-filter" data-status="Pending">Pending</button>
+            <button class="grey order-filter" data-status="Confirmed">Confirmed</button>
+            <button class="grey order-filter" data-status="Shipped">Shipped</button>
+            <button class="grey order-filter" data-status="Delivered">Delivered</button>
+            <button class="grey order-filter" data-status="Cancelled">Cancelled</button>
+        </div>
 
-    <div id="orders-list"></div>
-</div>
+        <div id="orders-list"></div>
+    </div>
 </section>
 
-<!-- PRODUCTS -->
 <section class="page" id="products">
     <div class="page-heading">
         <h1>Products Management</h1>
@@ -193,7 +189,6 @@ button:hover{opacity:.85}
     </div>
 </section>
 
-<!-- REVIEWS -->
 <section class="page" id="reviews">
     <div class="page-heading">
         <h1>Customer Reviews</h1>
@@ -202,7 +197,6 @@ button:hover{opacity:.85}
     <div id="reviews-list"></div>
 </section>
 
-<!-- CUSTOMERS -->
 <section class="page" id="customers">
     <div class="page-heading">
         <h1>Customers</h1>
@@ -211,7 +205,6 @@ button:hover{opacity:.85}
     <div id="customers-list"></div>
 </section>
 
-<!-- SETTINGS -->
 <section class="page" id="settings">
     <div class="page-heading">
         <h1>Settings</h1>
@@ -288,7 +281,6 @@ async function loadProducts() {
         products = await response.json();
         if (!Array.isArray(products)) products = [];
 
-        // Purane products ke liye default size stock
         products.forEach(product => {
             if (!product.sizeStock) {
                 product.sizeStock = {};
@@ -516,8 +508,15 @@ async function loadOrders() {
 /* DISPLAY ORDERS */
 let selectedOrderStatus = "All";
 
-function displayOrders() {
+/* ORDER FILTER BUTTON CLICK — ADDED */
+document.querySelectorAll(".order-filter").forEach(button => {
+    button.addEventListener("click", () => {
+        selectedOrderStatus = button.dataset.status;
+        displayOrders();
+    });
+});
 
+function displayOrders() {
     const list = $("orders-list");
     const recent = $("recent-orders");
 
@@ -535,7 +534,6 @@ function displayOrders() {
     }
 
     [...filteredOrders].reverse().forEach(order => {
-
         const customer = order.customer || {};
         const items = Array.isArray(order.items) ? order.items : [];
         const status = order.status || "Pending";
@@ -549,7 +547,6 @@ function displayOrders() {
 
         div.innerHTML = `
             <h3>Order #${escapeHTML(order.id)}</h3>
-
             <p><strong>Customer:</strong> ${escapeHTML(customer.name)}</p>
             <p><strong>Phone:</strong> ${escapeHTML(customer.phone)}</p>
             <p><strong>Address:</strong> ${escapeHTML(customer.houseNo || "")} ${escapeHTML(customer.address)}, ${escapeHTML(customer.city)}</p>
@@ -563,7 +560,6 @@ function displayOrders() {
 
             <div style="max-width:250px;margin-top:12px">
                 <label>Update Order Status</label>
-
                 <select data-order-status="${escapeHTML(order.id)}">
                     ${["Pending","Confirmed","Shipped","Delivered","Cancelled"].map(s =>
                         `<option value="${s}" ${status === s ? "selected" : ""}>${s}</option>`
@@ -599,6 +595,63 @@ function displayOrders() {
             : "grey order-filter";
     });
 }
+
+/* ORDER STATUS UPDATE */
+document.addEventListener("change", async event => {
+    const select = event.target.closest("select[data-order-status]");
+    if (!select) return;
+
+    const id = select.dataset.orderStatus;
+    const newStatus = select.value;
+    const order = orders.find(item => String(item.id) === String(id));
+
+    if (!order) return;
+
+    const oldStatus = order.status || "Pending";
+
+    try {
+        const response = await fetch(`/api/orders/${encodeURIComponent(id)}/status`, {
+            method: "PATCH",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({status: newStatus})
+        });
+
+        if (!response.ok) throw new Error("Status update failed");
+
+        order.status = newStatus;
+        displayOrders();
+        updateDashboard();
+        alert("Order status update ho gaya!");
+    } catch (error) {
+        console.error(error);
+        select.value = oldStatus;
+        alert("Order status update nahi hua.");
+    }
+});
+
+/* WHATSAPP ORDER */
+document.addEventListener("click", event => {
+    const button = event.target.closest("[data-order-whatsapp]");
+    if (!button) return;
+
+    const order = orders.find(item =>
+        String(item.id) === String(button.dataset.orderWhatsapp)
+    );
+
+    if (!order) return;
+
+    const customer = order.customer || {};
+    const message = `TY STYLE Order #${order.id}%0AName: ${customer.name || ""}%0APhone: ${customer.phone || ""}%0ATotal: Rs. ${order.total || 0}`;
+
+    const phone = String(customer.phone || "").replace(/\D/g, "");
+    if (!phone) {
+        alert("Customer phone number nahi mila.");
+        return;
+    }
+
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+});
+
 /* REVIEWS */
 async function loadReviews() {
     const list = $("reviews-list");
@@ -651,6 +704,51 @@ function displayReviews() {
     });
 }
 
+/* CUSTOMERS */
+function displayCustomers() {
+    const list = $("customers-list");
+    const customers = {};
+
+    orders.forEach(order => {
+        const customer = order.customer || {};
+        const phone = customer.phone || "No phone";
+
+        if (!customers[phone]) {
+            customers[phone] = {
+                name: customer.name || "Unknown",
+                phone,
+                orders: 0,
+                total: 0
+            };
+        }
+
+        customers[phone].orders++;
+        customers[phone].total += Number(order.total || 0);
+    });
+
+    list.innerHTML = "";
+
+    const customerList = Object.values(customers);
+
+    if (!customerList.length) {
+        list.innerHTML = '<div class="empty">Abhi koi customer nahi hai.</div>';
+    }
+
+    customerList.forEach(customer => {
+        const div = document.createElement("div");
+        div.className = "order-card";
+        div.innerHTML = `
+            <h3>${escapeHTML(customer.name)}</h3>
+            <p>Phone: ${escapeHTML(customer.phone)}</p>
+            <p>Total Orders: ${customer.orders}</p>
+            <p>Total Spending: Rs. ${customer.total.toLocaleString("en-PK")}</p>
+        `;
+        list.appendChild(div);
+    });
+
+    $("customer-count").textContent = customerList.length;
+}
+
 /* DASHBOARD */
 function updateDashboard() {
     $("product-count").textContent = products.length;
@@ -658,6 +756,12 @@ function updateDashboard() {
 
     const sales = orders.reduce((sum, order) => sum + Number(order.total || 0), 0);
     $("total-sales").textContent = "Rs. " + sales.toLocaleString("en-PK");
+
+    const customerPhones = new Set(
+        orders.map(order => order.customer?.phone).filter(Boolean)
+    );
+
+    $("customer-count").textContent = customerPhones.size;
 }
 
 /* START */
