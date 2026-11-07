@@ -9,6 +9,100 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static(__dirname));
 
+// REVIEWS FILE
+const reviewsFile = path.join(__dirname, "reviews.json");
+
+function getReviews() {
+    try {
+        if (!fs.existsSync(reviewsFile)) {
+            fs.writeFileSync(reviewsFile, "[]");
+        }
+
+        return JSON.parse(
+            fs.readFileSync(reviewsFile, "utf8")
+        );
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveReviews(reviews) {
+    fs.writeFileSync(
+        reviewsFile,
+        JSON.stringify(reviews, null, 2)
+    );
+}
+
+// GET PRODUCT REVIEWS
+app.get("/api/reviews/:productId", (req, res) => {
+    const reviews = getReviews();
+
+    const productReviews = reviews.filter(
+        review =>
+            String(review.productId) ===
+            String(req.params.productId)
+    );
+
+    res.json({
+        success: true,
+        reviews: productReviews
+    });
+});
+
+// SUBMIT CUSTOMER REVIEW
+app.post("/api/reviews", (req, res) => {
+    const { productId, name, rating, comment } = req.body;
+
+    if (
+        !productId ||
+        !name ||
+        !comment ||
+        !Number.isInteger(Number(rating)) ||
+        Number(rating) < 1 ||
+        Number(rating) > 5
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "Please fill all review details correctly."
+        });
+    }
+
+    const cleanName = String(name).trim();
+    const cleanComment = String(comment).trim();
+
+    if (
+        cleanName.length < 2 ||
+        cleanName.length > 50 ||
+        cleanComment.length < 5 ||
+        cleanComment.length > 1000
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "Name or review length is invalid."
+        });
+    }
+
+    const reviews = getReviews();
+
+    const review = {
+        id: Date.now(),
+        productId: String(productId),
+        name: cleanName,
+        rating: Number(rating),
+        comment: cleanComment,
+        date: new Date().toISOString()
+    };
+
+    reviews.push(review);
+    saveReviews(reviews);
+
+    res.json({
+        success: true,
+        message: "Thank you! Your review has been submitted.",
+        review
+    });
+});
+
 // CUSTOMER ORDERS
 app.post("/api/orders", (req, res) => {
     const order = {
